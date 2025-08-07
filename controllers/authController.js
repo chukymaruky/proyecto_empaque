@@ -18,11 +18,15 @@ exports.login = async (req, res) => {
     }
 
     // Guardamos la sesión
-    req.session.usuario = {
-      id: usuario.pk_usuario,
-      rol: usuario.fk_rol,
-      empaque: usuario.fk_empaque
-    };
+   req.session.usuario = {
+    id: usuario.pk_usuario,
+    rol: usuario.fk_rol,            // → 1, 2, 3
+    nombre: usuario.nombre_usuario,
+    empaque: usuario.fk_empaque     // solo si no es admin
+};
+req.session.usuario.empaqueSeleccionado = empaqueElegidoId;
+
+
 
     // Redirección según rol
     switch (usuario.fk_rol) {
