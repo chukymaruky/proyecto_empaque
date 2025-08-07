@@ -42,3 +42,15 @@ module.exports = {
   Empleado,
   Salario
 };
+
+// Asociación: Usuario → DatoPersona
+Usuario.belongsTo(DatoPersona, { foreignKey: 'fk_dato_persona' });
+DatoPersona.hasOne(Usuario, { foreignKey: 'fk_dato_persona' });
+
+// Asociación: Usuario → Rol
+Usuario.belongsTo(Rol, { foreignKey: 'fk_rol' });
+Rol.hasMany(Usuario, { foreignKey: 'fk_rol' });
+
+// Asociación: Usuario → Empaque
+Usuario.belongsTo(Empaque, { foreignKey: 'fk_empaque' });
+Empaque.hasMany(Usuario, { foreignKey: 'fk_empaque' });
