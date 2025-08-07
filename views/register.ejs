@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+</head>
+<body>
+  <h1>Registrar Usuario</h1>
+
+  <% if (error) { %>
+    <p style="color:red;"><%= error %></p>
+  <% } %>
+
+  <form action="/register" method="POST">
+    <label>Nombre de usuario:</label>
+    <input type="text" name="nombre_usuario" required>
+
+    <label>Contraseña:</label>
+    <input type="password" name="contraseña" required>
+
+    <label>Confirmar Contraseña:</label>
+    <input type="password" name="confirmar_contraseña" required>
+
+    <h3>Datos personales</h3>
+    <label>Nombres:</label>
+    <input type="text" name="nombres" required>
+
+    <label>Primer apellido:</label>
+    <input type="text" name="primer_apellido" required>
+
+    <label>Segundo apellido:</label>
+    <input type="text" name="segundo_apellido">
+
+    <label>Rol:</label>
+    <select name="fk_rol" required>
+      <option value="1">Administrador</option>
+      <option value="2">Supervisor</option>
+      <option value="3">Empleado</option>
+    </select>
+
+    <label>Empaque:</label>
+    <input type="number" name="fk_empaque" required>
+
+    <button type="submit">Registrar</button>
+  </form>
+
+  <a href="/">Volver al login</a>
+</body>
+</html>
