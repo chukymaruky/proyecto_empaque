@@ -1,23 +1,14 @@
-// models/DatoPersona.js
+// models/Empaque.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const Empaque = sequelize.define('empaque', {
+  pk_empaque: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
-  fk_empaque: DataTypes.INTEGER,
+  nombre_empaque: DataTypes.STRING(150),
   hora: {
     type: DataTypes.TIME,
     defaultValue: DataTypes.NOW
@@ -31,9 +22,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'empaque',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = Empaque;

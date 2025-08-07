@@ -1,22 +1,21 @@
-// models/DatoPersona.js
+// models/Salario.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const Salario = sequelize.define('salario', {
+  pk_salario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
+  cantidad_salario: {
+    type: DataTypes.DECIMAL(7, 2),
     allowNull: false
   },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
+  fk_empleado: {
+    type: DataTypes.INTEGER,
     allowNull: false
   },
-  segundo_apellido: DataTypes.STRING(150),
   fk_empaque: DataTypes.INTEGER,
   hora: {
     type: DataTypes.TIME,
@@ -31,9 +30,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'salario',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = Salario;

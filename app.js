@@ -5,6 +5,7 @@ const session = require('express-session');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const sequelize = require('./config/database'); //para probar la conexión a la base de datos
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
@@ -30,8 +31,14 @@ app.use('/dashboard', dashboardRoutes);
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 // Manejo de errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Algo salió mal!');
 });
+
+// prueba de conexión a la base de datos
+sequelize.authenticate()
+  .then(() => console.log('✅ Conexión a la base de datos establecida'))
+  .catch(err => console.error('❌ Error al conectar:', err));

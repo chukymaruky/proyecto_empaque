@@ -1,22 +1,14 @@
-// models/DatoPersona.js
+// models/CategoriaProducto.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const CategoriaProducto = sequelize.define('categoria_producto', {
+  pk_categoria_producto: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
+  nombre_categoria: DataTypes.STRING(100),
   fk_empaque: DataTypes.INTEGER,
   hora: {
     type: DataTypes.TIME,
@@ -31,9 +23,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'categoria_producto',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = CategoriaProducto;

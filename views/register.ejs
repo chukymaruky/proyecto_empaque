@@ -32,14 +32,20 @@
     <input type="text" name="segundo_apellido">
 
     <label>Rol:</label>
-    <select name="fk_rol" required>
-      <option value="1">Administrador</option>
-      <option value="2">Supervisor</option>
-      <option value="3">Empleado</option>
-    </select>
+    <select name="fk_rol">
+  <% roles.forEach(r => { %>
+    <option value="<%= r.pk_rol %>"><%= r.rol %></option>
+  <% }) %>
+</select>
+
+
 
     <label>Empaque:</label>
-    <input type="number" name="fk_empaque" required>
+    <select name="fk_empaque">
+      <% empaques.forEach(e => { %>
+        <option value="<%= e.pk_empaque %>"><%= e.nombre_empaque %></option>
+      <% }) %>
+    </select>
 
     <button type="submit">Registrar</button>
   </form>

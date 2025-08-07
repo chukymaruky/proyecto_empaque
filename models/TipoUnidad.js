@@ -1,22 +1,18 @@
-// models/DatoPersona.js
+// models/TipoUnidad.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const TipoUnidad = sequelize.define('tipo_unidad', {
+  pk_tipo_unidad: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    field: 'tipo_unidad'  // Mapeo al nombre de columna existente
   },
-  nombres: {
-    type: DataTypes.STRING(150),
+  nombre_tipo_unidad: {
+    type: DataTypes.TEXT,
     allowNull: false
   },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
   fk_empaque: DataTypes.INTEGER,
   hora: {
     type: DataTypes.TIME,
@@ -31,9 +27,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'tipo_unidad',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = TipoUnidad;

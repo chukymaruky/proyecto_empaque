@@ -1,23 +1,17 @@
-// models/DatoPersona.js
+// models/ProductoProcesado.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const ProductoProcesado = sequelize.define('producto_procesado', {
+  pk_producto_procesado: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
+  fk_categoria_producto: DataTypes.INTEGER,
+  fk_pedido: DataTypes.INTEGER,
   fk_empaque: DataTypes.INTEGER,
+  fk_tipo_unidad: DataTypes.INTEGER,
   hora: {
     type: DataTypes.TIME,
     defaultValue: DataTypes.NOW
@@ -31,9 +25,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'producto_procesado',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = ProductoProcesado;

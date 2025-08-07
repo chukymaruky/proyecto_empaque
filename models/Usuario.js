@@ -19,21 +19,16 @@ const Usuario = sequelize.define('usuario', {
   fk_dato_persona: DataTypes.INTEGER,
   fk_rol: DataTypes.INTEGER,
   fk_empaque: DataTypes.INTEGER,
-  hora: {
-    type: DataTypes.TIME,
-    defaultValue: Sequelize.literal('CURRENT_TIME')
-  },
-  fecha: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.literal('CURRENT_DATE')
-  },
+  hora: DataTypes.TIME,
+  fecha: DataTypes.DATE,
   estado: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
   }
 }, {
-  tableName: 'usuario',
-  timestamps: false
+  tableName: 'usuario',         // 👈 evita pluralización
+  timestamps: false,            // 👈 desactiva timestamps automáticos
+  freezeTableName: true         // 👈 evita que Sequelize cambie el nombre de la tabla
 });
 
 module.exports = Usuario;

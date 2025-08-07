@@ -1,22 +1,21 @@
-// models/DatoPersona.js
+// models/TipoVehiculo.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const TipoVehiculo = sequelize.define('tipo_vehiculo', {
+  pk_tipo_vehiculo: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
+  tipo_vehiculo: {
+    type: DataTypes.STRING(100),
     allowNull: false
   },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
+  capacidad_carga_kg: {
+    type: DataTypes.DECIMAL(9, 2),
     allowNull: false
   },
-  segundo_apellido: DataTypes.STRING(150),
   fk_empaque: DataTypes.INTEGER,
   hora: {
     type: DataTypes.TIME,
@@ -31,9 +30,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'tipo_vehiculo',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = TipoVehiculo;

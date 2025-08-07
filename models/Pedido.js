@@ -1,23 +1,30 @@
-// models/DatoPersona.js
+// models/Pedido.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
+const Pedido = sequelize.define('pedido', {
+  pk_pedido: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
-  nombres: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
+  fk_proveedor: DataTypes.INTEGER,
+  fk_categoria_producto: DataTypes.INTEGER,
+  fk_transporte: DataTypes.INTEGER,
   fk_empaque: DataTypes.INTEGER,
+  peso_pedido: {
+    type: DataTypes.DECIMAL(9, 2),
+    allowNull: false
+  },
+  dia_hora_llegada: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  estado_pedido: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false
+  },
+  observaciones: DataTypes.TEXT,
   hora: {
     type: DataTypes.TIME,
     defaultValue: DataTypes.NOW
@@ -31,9 +38,9 @@ const DatoPersona = sequelize.define('dato_persona', {
     defaultValue: true
   }
 }, {
-  tableName: 'dato_persona',
+  tableName: 'pedido',
   timestamps: false,
   freezeTableName: true
 });
 
-module.exports = DatoPersona;
+module.exports = Pedido;
