@@ -1,0 +1,70 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2><%= empresa ? 'Editar' : 'Agregar' %> Empresa</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <form method="POST" action="<%= empresa ? '/admin/empresas/edit/' + empresa.pk_empresa : '/admin/empresas/add' %>">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="razon_social">Razón Social *</label>
+          <input type="text" class="form-control" id="razon_social" name="razon_social" 
+                 value="<%= empresa ? empresa.razon_social : '' %>" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="nombre_comercial">Nombre Comercial</label>
+          <input type="text" class="form-control" id="nombre_comercial" name="nombre_comercial"
+                 value="<%= empresa ? empresa.nombre_comercial : '' %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="rfc">RFC</label>
+          <input type="text" class="form-control" id="rfc" name="rfc" 
+                 value="<%= empresa ? empresa.rfc : '' %>">
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="regimen_fiscal">Régimen Fiscal</label>
+          <input type="text" class="form-control" id="regimen_fiscal" name="regimen_fiscal"
+                 value="<%= empresa ? empresa.regimen_fiscal : '' %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="telefono_contacto">Teléfono de Contacto</label>
+          <input type="tel" class="form-control" id="telefono_contacto" name="telefono_contacto"
+                 value="<%= empresa ? empresa.telefono_contacto : '' %>">
+        </div>
+        
+        <div class="form-group">
+          <label for="email_contacto">Email de Contacto</label>
+          <input type="email" class="form-control" id="email_contacto" name="email_contacto"
+                 value="<%= empresa ? empresa.email_contacto : '' %>">
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="domicilio_fiscal">Domicilio Fiscal</label>
+      <textarea class="form-control" id="domicilio_fiscal" name="domicilio_fiscal" 
+                rows="2"><%= empresa ? empresa.domicilio_fiscal : '' %></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="representante_legal">Representante Legal</label>
+      <input type="text" class="form-control" id="representante_legal" name="representante_legal"
+             value="<%= empresa ? empresa.representante_legal : '' %>">
+    </div>
+    
+    <button type="submit" class="btn btn-primary">
+      <%= empresa ? 'Actualizar' : 'Guardar' %> Empresa
+    </button>
+    <a href="/admin/empresas" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>

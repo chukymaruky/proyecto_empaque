@@ -2,19 +2,49 @@ const pool = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 class User {
-  // Registrar un nuevo usuario
-  static async create({ username, password, fk_dato_persona, fk_rol, fk_empaque }) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const query = `
-      INSERT INTO usuario 
-      (nombre_usuario, contraseña, fk_dato_persona, fk_rol, fk_empaque) 
-      VALUES ($1, $2, $3, $4, $5) 
-      RETURNING pk_usuario, nombre_usuario, fk_rol, fk_empaque
-    `;
-    const values = [username, hashedPassword, fk_dato_persona, fk_rol, fk_empaque];
-    const { rows } = await pool.query(query, values);
-    return rows[0];
+  static async createWithDetails({ username, password, nombres, primer_apellido, segundo_apellido, fk_rol, fk_empaque }) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // 1. Insertar dato personal
+      const personaQuery = `
+        INSERT INTO dato_persona 
+        (nombres, primer_apellido, segundo_apellido, fk_empaque) 
+        VALUES ($1, $2, $3, $4) 
+        RETURNING pk_dato_persona
+      `;
+      const personaValues = [nombres, primer_apellido, segundo_apellido || null, fk_empaque];
+      const personaRes = await client.query(personaQuery, personaValues);
+      const pk_dato_persona = personaRes.rows[0].pk_dato_persona;
+
+      // 2. Insertar usuario
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userQuery = `
+        INSERT INTO usuario 
+        (nombre_usuario, contraseña, fk_dato_persona, fk_rol, fk_empaque) 
+        VALUES ($1, $2, $3, $4, $5) 
+        RETURNING *
+      `;
+      const userValues = [username, hashedPassword, pk_dato_persona, fk_rol, fk_empaque];
+      const userRes = await client.query(userQuery, userValues);
+
+      await client.query('COMMIT');
+      return userRes.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
+
+  static async isUsernameAvailable(username) {
+    const query = 'SELECT 1 FROM usuario WHERE nombre_usuario = $1';
+    const { rows } = await pool.query(query, [username]);
+    return rows.length === 0;
+  }
+
 
   // Buscar usuario por nombre de usuario
   static async findByUsername(username) {

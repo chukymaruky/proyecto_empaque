@@ -18,6 +18,8 @@
     </form>
   </div>
 
+
+
   <% if (selectedEmpaque) { %>
     <div class="empaque-info">
       <h3>Información del Empaque: <%= selectedEmpaque.nombre_empaque %></h3>
@@ -25,18 +27,53 @@
       <p>Estado: <%= selectedEmpaque.estado ? 'Activo' : 'Inactivo' %></p>
     </div>
   <% } %>
+<br>
+  <!-- Botón que controla el collapse -->
+<p>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAgregar"
+    aria-expanded="false" aria-controls="collapseAgregar">
+    Agregar Registros
+  </button>
+</p>
 
-  <div class="admin-sections">
-    <div class="admin-card">
-      <h4>Gestión de Usuarios</h4>
-      <p>Administra todos los usuarios del sistema</p>
-      <a href="/admin/users" class="btn">Ir a Usuarios</a>
-    </div>
-    
-    <div class="admin-card">
-      <h4>Reportes Generales</h4>
-      <p>Visualiza reportes de todos los empaques</p>
-      <a href="#" class="btn">Ver Reportes</a>
+<!-- Contenido colapsable con list-group adentro -->
+<div class="collapse" id="collapseAgregar">
+  <div class="card card-body">
+    <div class="list-group">
+      <a href="/admin/empresas/add" class="list-group-item list-group-item-action">Agregar Empresa</a>
+      <a href="/admin/proveedores/add" class="list-group-item list-group-item-action">Agregar Proveedor</a>
+      <a href="/admin/users/add" class="list-group-item list-group-item-action">Agregar Usuario</a>
+      <a href="#" class="list-group-item list-group-item-action">Agregar </a>
+      <a href="#" class="list-group-item list-group-item-action">Agregar </a>
+      <a href="#" class="list-group-item list-group-item-action">Agregar </a>
+      <a href="#" class="list-group-item list-group-item-action">Agregar </a>
+      <a href="#" class="list-group-item list-group-item-action">Agregar </a>
     </div>
   </div>
 </div>
+    
+<br>
+      <!-- Botón que controla el collapse -->
+<p>
+  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVisualizar"
+    aria-expanded="false" aria-controls="collapseVisualizar">
+    Visualizar Registros
+  </button>
+</p>
+
+<!-- Contenido colapsable con list-group adentro -->
+<div class="collapse" id="collapseVisualizar">
+  <div class="card card-body">
+    <div class="list-group">
+      <a href="#" class="list-group-item list-group-item-action">Visualizar Empresa</a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar Proveedor</a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar Usuario</a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar </a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar </a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar </a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar </a>
+      <a href="#" class="list-group-item list-group-item-action">Visualizar </a>
+    </div>
+  </div>
+</div>
+    

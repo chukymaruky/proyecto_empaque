@@ -1,0 +1,40 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Proveedores</h2>
+    <a href="/admin/proveedores/add" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nuevo Proveedor
+    </a>
+  </div>
+
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Empresa</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% proveedores.forEach(proveedor => { %>
+          <tr>
+            <td><%= proveedor.pk_proveedor %></td>
+            <td><%= proveedor.nombres %> <%= proveedor.primer_apellido %></td>
+            <td><%= proveedor.razon_social || 'N/A' %></td>
+            <td>
+              <a href="#" class="btn btn-sm btn-info">Editar</a>
+              <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
