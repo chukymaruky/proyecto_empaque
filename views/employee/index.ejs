@@ -1,0 +1,24 @@
+<%- include('../layouts/main') -%>
+
+<div class="employee-dashboard">
+  <h2>Panel de Empleado</h2>
+  
+  <div class="welcome-message">
+    <p>Bienvenido al sistema de gestión de empaques</p>
+    <p>Estás asignado al empaque: <strong><%= empaque.nombre_empaque %></strong></p>
+  </div>
+
+  <div class="employee-actions">
+    <div class="action-card">
+      <h3>Productos</h3>
+      <p>Gestiona los productos de tu empaque</p>
+      <a href="/employee/products" class="btn">Ver Productos</a>
+    </div>
+    
+    <div class="action-card">
+      <h3>Registrar Actividad</h3>
+      <p>Registra tus actividades diarias</p>
+      <a href="#" class="btn">Registrar</a>
+    </div>
+  </div>
+</div>

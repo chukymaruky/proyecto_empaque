@@ -1,39 +1,18 @@
-// models/DatoPersona.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const pool = require('../config/database');
 
-const DatoPersona = sequelize.define('dato_persona', {
-  pk_dato_persona: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  nombres: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  primer_apellido: {
-    type: DataTypes.STRING(150),
-    allowNull: false
-  },
-  segundo_apellido: DataTypes.STRING(150),
-  fk_empaque: DataTypes.INTEGER,
-  hora: {
-    type: DataTypes.TIME,
-    defaultValue: DataTypes.NOW
-  },
-  fecha: {
-    type: DataTypes.DATEONLY,
-    defaultValue: DataTypes.NOW
-  },
-  estado: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
+class DatoPersona {
+  // Crear un nuevo dato personal
+  static async create({ nombres, primer_apellido, segundo_apellido, fk_empaque }) {
+    const query = `
+      INSERT INTO dato_persona 
+      (nombres, primer_apellido, segundo_apellido, fk_empaque) 
+      VALUES ($1, $2, $3, $4) 
+      RETURNING pk_dato_persona
+    `;
+    const values = [nombres, primer_apellido, segundo_apellido, fk_empaque];
+    const { rows } = await pool.query(query, values);
+    return rows[0];
   }
-}, {
-  tableName: 'dato_persona',
-  timestamps: false,
-  freezeTableName: true
-});
+}
 
 module.exports = DatoPersona;

@@ -1,0 +1,42 @@
+<%- include('../layouts/main') -%>
+
+<div class="admin-dashboard">
+  <h2>Panel de Administración</h2>
+  
+  <div class="admin-actions">
+    <h3>Seleccionar Empaque</h3>
+    <form action="/admin" method="GET">
+      <select name="empaque_id" onchange="this.form.submit()">
+        <option value="">-- Todos los empaques --</option>
+        <% empaques.forEach(empaque => { %>
+          <option value="<%= empaque.pk_empaque %>" 
+            <%= selectedEmpaque && selectedEmpaque.pk_empaque === empaque.pk_empaque ? 'selected' : '' %>>
+            <%= empaque.nombre_empaque %>
+          </option>
+        <% }); %>
+      </select>
+    </form>
+  </div>
+
+  <% if (selectedEmpaque) { %>
+    <div class="empaque-info">
+      <h3>Información del Empaque: <%= selectedEmpaque.nombre_empaque %></h3>
+      <p>Fecha de creación: <%= selectedEmpaque.fecha.toLocaleDateString() %></p>
+      <p>Estado: <%= selectedEmpaque.estado ? 'Activo' : 'Inactivo' %></p>
+    </div>
+  <% } %>
+
+  <div class="admin-sections">
+    <div class="admin-card">
+      <h4>Gestión de Usuarios</h4>
+      <p>Administra todos los usuarios del sistema</p>
+      <a href="/admin/users" class="btn">Ir a Usuarios</a>
+    </div>
+    
+    <div class="admin-card">
+      <h4>Reportes Generales</h4>
+      <p>Visualiza reportes de todos los empaques</p>
+      <a href="#" class="btn">Ver Reportes</a>
+    </div>
+  </div>
+</div>

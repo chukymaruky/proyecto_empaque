@@ -1,0 +1,135 @@
+<%- include('../layouts/main') -%>
+
+<div class="register-container">
+  <h2>Registro de Usuario</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+  
+  <form action="/register" method="POST">
+    <h3>Datos Personales</h3>
+    <div class="form-group">
+      <label for="nombres">Nombres:</label>
+      <input type="text" id="nombres" name="nombres" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="primer_apellido">Primer Apellido:</label>
+      <input type="text" id="primer_apellido" name="primer_apellido" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="segundo_apellido">Segundo Apellido:</label>
+      <input type="text" id="segundo_apellido" name="segundo_apellido">
+    </div>
+    
+    <h3>Credenciales de Acceso</h3>
+    <div class="form-group">
+      <label for="username">Usuario:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    
+    <div class="form-group">
+    <label for="empaque_id">Empaque:</label>
+    <select id="empaque_id" name="empaque_id" required class="form-control" onchange="cargarRoles(this.value)">
+      <option value="">Seleccione un empaque</option>
+      <% empaques.forEach(empaque => { %>
+        <option value="<%= empaque.pk_empaque %>"><%= empaque.nombre_empaque %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="role_id">Rol:</label>
+    <select id="role_id" name="role_id" required class="form-control" disabled>
+      <option value="">Primero seleccione un empaque</option>
+      <% roles.forEach(role => { %>
+        <option value="<%= role.pk_rol %>"><%= role.rol %></option>
+      <% }); %>
+    </select>
+  </div>
+    
+    <button type="submit">Registrarse</button>
+  </form>
+  
+  <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
+</div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+  const password = document.getElementById('password').value;
+  
+  if(password.length < 8) {
+    e.preventDefault();
+    alert('La contraseña debe tener al menos 8 caracteres');
+    return false;
+  }
+  
+  // Otras validaciones que necesites
+});
+</script>
+<script>
+// Función mejorada para cargar roles
+async function cargarRoles(empaque_id) {
+  const roleSelect = document.getElementById('role_id');
+  const API_URL = `/api/roles/${empaque_id}`;
+  
+  // Resetear el dropdown
+  roleSelect.innerHTML = '<option value="">Cargando roles...</option>';
+  roleSelect.disabled = true;
+
+  if (!empaque_id) {
+    roleSelect.innerHTML = '<option value="">Seleccione un empaque primero</option>';
+    return;
+  }
+
+  try {
+    // Realizar petición con headers explícitos
+    const response = await fetch(API_URL, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Verificar si la respuesta es JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const errorText = await response.text();
+      throw new Error(`Respuesta no es JSON: ${errorText.substring(0, 100)}...`);
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Error ${response.status}`);
+    }
+
+    // Construir opciones
+    if (data.length === 0) {
+      roleSelect.innerHTML = '<option value="">No hay roles disponibles</option>';
+    } else {
+      let options = '<option value="">Seleccione un rol</option>';
+      data.forEach(role => {
+        options += `<option value="${role.pk_rol}">${role.rol}</option>`;
+      });
+      roleSelect.innerHTML = options;
+      roleSelect.disabled = false;
+    }
+    
+  } catch (error) {
+    console.error('Error al cargar roles:', error);
+    roleSelect.innerHTML = `<option value="">Error: ${error.message}</option>`;
+  }
+}
+</script>

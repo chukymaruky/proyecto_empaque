@@ -1,48 +1,143 @@
-// controllers/authController.js
+const User = require('../models/user');
+const DatoPersona = require('../models/DatoPersona');
+const Role = require('../models/Role');
+const Empaque = require('../models/empaque');
 const bcrypt = require('bcryptjs');
-const Usuario = require('../models/Usuario');
 
-exports.login = async (req, res) => {
-  const { nombre_usuario, contraseña } = req.body;
+const authController = {
+  // Mostrar formulario de login
+  showLogin: (req, res) => {
+  res.render('auth/login', { 
+    user: req.session.user || null,  // Asegurar que user esté definido
+    error_msg: req.flash('error_msg')[0],
+    success_msg: req.flash('success_msg')[0]
+  });
+},
 
+  // Procesar login
+  login: async (req, res) => {
+    const { username, password } = req.body;
+    
+    try {
+      const user = await User.findByUsername(username);
+      
+      // Verificación combinada para no revelar qué está incorrecto
+      if (!user || !(await User.comparePassword(password, user.contraseña))) {
+        req.flash('error_msg', 'Usuario o contraseña incorrectos');
+        return res.redirect('/login');
+      }
+      
+      // Guardar usuario en sesión (sin la contraseña)
+      req.session.user = {
+        id: user.pk_usuario,
+        username: user.nombre_usuario,
+        rol: user.rol_nombre,
+        empaque_id: user.fk_empaque,
+        empaque_nombre: user.nombre_empaque
+      };
+      
+      // Redirigir según el rol
+      switch (user.rol_nombre) {
+        case 'administrador':
+          return res.redirect('/admin');
+        case 'supervisor':
+          return res.redirect('/supervisor');
+        case 'empleado':
+          return res.redirect('/employee');
+        default:
+          return res.redirect('/');
+      }
+    } catch (error) {
+      console.error(error);
+      req.flash('error_msg', 'Error al iniciar sesión');
+      res.redirect('/login');
+    }
+  },
+
+  // Cerrar sesión
+  logout: (req, res) => {
+    req.session.destroy(() => {
+      res.redirect('/login');
+    });
+  },
+
+  // Mostrar formulario de registro
+  showRegister: async (req, res) => {
   try {
-    const usuario = await Usuario.findOne({ where: { nombre_usuario } });
+    const empaques = await Empaque.getAll();
+    res.render('auth/register', { 
+      empaques,
+      roles: [], // Inicialmente vacío hasta que seleccionen empaque
+      error_msg: req.flash('error_msg')[0],
+      user: req.session.user || null
+    });
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Error al cargar el formulario');
+    res.redirect('/register');
+  }
+},
 
-    if (!usuario) {
-      return res.render('login', { error: 'Usuario no encontrado' });
+// Nueva ruta para obtener roles por empaque (AJAX)
+// controllers/authController.js
+getRolesByEmpaque: async (req, res) => {
+  try {
+    const { empaque_id } = req.params;
+    
+    if (!empaque_id || isNaN(empaque_id)) {
+      return res.status(400).json({ error: 'ID de empaque inválido' });
     }
 
-    const valido = await bcrypt.compare(contraseña, usuario.contraseña);
-    if (!valido) {
-      return res.render('login', { error: 'Contraseña incorrecta' });
+    const roles = await Role.getByEmpaque(empaque_id);
+    res.json(roles); // Simple respuesta JSON
+    
+  } catch (error) {
+    console.error('Error en getRolesByEmpaque:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener roles',
+      details: error.message
+    });
+  }
+},
+
+  // Procesar registro
+  register: async (req, res) => {
+    const { 
+      nombres, 
+      primer_apellido, 
+      segundo_apellido, 
+      username, 
+      password, 
+      role_id,
+      empaque_id 
+    } = req.body;
+    
+    try {
+      // 1. Crear dato personal
+      const datoPersona = await DatoPersona.create({
+        nombres,
+        primer_apellido,
+        segundo_apellido: segundo_apellido || null,
+        fk_empaque: empaque_id
+      });
+      
+      // 2. Crear usuario
+      await User.create({
+        username,
+        password,
+        fk_dato_persona: datoPersona.pk_dato_persona,
+        fk_rol: role_id,
+        fk_empaque: empaque_id
+      });
+      
+      req.flash('success_msg', 'Usuario registrado exitosamente');
+      res.redirect('/login');
+    } catch (error) {
+      console.error(error);
+      req.flash('error_msg', 'Error al registrar el usuario: ' + error.message);
+      res.redirect('/register');
     }
-
-    // Guardamos la sesión
-   req.session.usuario = {
-    id: usuario.pk_usuario,
-    rol: usuario.fk_rol,            // → 1, 2, 3
-    nombre: usuario.nombre_usuario,
-    empaque: usuario.fk_empaque     // solo si no es admin
-};
-req.session.usuario.empaqueSeleccionado = empaqueElegidoId;
-
-
-
-    // Redirección según rol
-    switch (usuario.fk_rol) {
-      case 1: res.redirect('/dashboard/admin'); break;
-      case 2: res.redirect('/dashboard/supervisor'); break;
-      case 3: res.redirect('/dashboard/empleado'); break;
-      default: res.redirect('/');
-    }
-
-  } catch (err) {
-    console.error(err);
-    res.render('login', { error: 'Error interno' });
   }
 };
 
-exports.logout = (req, res) => {
-  req.session.destroy();
-  res.redirect('/');
-};
+module.exports = authController;

@@ -1,24 +1,11 @@
-// middlewares/roleMiddleware.js
-exports.esAdmin = (req, res, next) => {
-  if (req.session.usuario?.rol === 1) {
-    next();
-  } else {
+// Middleware para verificar el rol del usuario
+function checkRole(roles) {
+  return function(req, res, next) {
+    if (req.session.user && roles.includes(req.session.user.rol_nombre)) {
+      return next();
+    }
     res.status(403).send('Acceso denegado');
-  }
-};
+  };
+}
 
-exports.esSupervisor = (req, res, next) => {
-  if (req.session.usuario?.rol === 2) {
-    next();
-  } else {
-    res.status(403).send('Acceso denegado');
-  }
-};
-
-exports.esEmpleado = (req, res, next) => {
-  if (req.session.usuario?.rol === 3) {
-    next();
-  } else {
-    res.status(403).send('Acceso denegado');
-  }
-};
+module.exports = checkRole;

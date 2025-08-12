@@ -1,25 +1,15 @@
-// routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const userController = require('../controllers/userController');
-const Empaque = require('../models/Empaque');
-const Rol = require('../models/Rol');
+const validateRegister = require('../middlewares/validateRegister');
+const { isNotAuthenticated } = require('../middlewares/authMiddleware');
 
 
-router.get('/', (req, res) => res.render('login', { error: null }));
-router.post('/login', authController.login);
+// Rutas de autenticación
+router.get('/login', isNotAuthenticated, authController.showLogin);
+router.post('/login', isNotAuthenticated, authController.login);
 router.get('/logout', authController.logout);
-router.get('/register', (req, res) => {
-  res.render('register', { error: null });
-});
-router.post('/register', userController.registrarUsuario);
-
-
-router.get('/register', async (req, res) => {
-  const empaques = await Empaque.findAll();
-  const roles = await Rol.findAll();
-  res.render('register', { empaques, roles, error: null });
-});
+router.get('/register', isNotAuthenticated, authController.showRegister);
+router.post('/register', isNotAuthenticated, authController.register);
 
 module.exports = router;

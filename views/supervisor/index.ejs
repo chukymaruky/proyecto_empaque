@@ -1,0 +1,31 @@
+<%- include('../layouts/main') -%>
+
+<div class="supervisor-dashboard">
+  <h2>Panel de Supervisor</h2>
+  
+  <div class="welcome-message">
+    <p>Bienvenido al sistema de gestión de empaques</p>
+    <p>Estás a cargo del empaque: <strong><%= empaque.nombre_empaque %></strong></p>
+    <p>Fecha de creación: <%= empaque.fecha.toLocaleDateString() %></p>
+  </div>
+
+  <div class="supervisor-actions">
+    <div class="action-card">
+      <h3>Reportes</h3>
+      <p>Genera reportes de tu empaque</p>
+      <a href="/supervisor/reports" class="btn">Ver Reportes</a>
+    </div>
+    
+    <div class="action-card">
+      <h3>Gestión de Empleados</h3>
+      <p>Administra los empleados de tu empaque</p>
+      <a href="/supervisor/employees" class="btn">Gestionar</a>
+    </div>
+    
+    <div class="action-card">
+      <h3>Inventario</h3>
+      <p>Controla el inventario de tu empaque</p>
+      <a href="#" class="btn">Ver Inventario</a>
+    </div>
+  </div>
+</div>
