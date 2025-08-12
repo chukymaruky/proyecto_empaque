@@ -10,6 +10,7 @@ router.get('/login', isNotAuthenticated, authController.showLogin);
 router.post('/login', isNotAuthenticated, authController.login);
 router.get('/logout', authController.logout);
 router.get('/register', isNotAuthenticated, authController.showRegister);
+router.get('/roles/:empaque_id', authController.getRolesByEmpaque);
 router.post('/register', isNotAuthenticated, authController.register);
 
 module.exports = router;
