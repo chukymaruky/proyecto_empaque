@@ -4,7 +4,7 @@ const adminController = require('../controllers/adminController');
 const { isAuthenticated } = require('../middlewares/authMiddleware');
 const checkRole = require('../middlewares/roleMiddleware');
 
-// Solo usuarios autenticados con rol de administrador pueden acceder
+// Solo admin puede acceder
 router.use(isAuthenticated, checkRole(['administrador']));
 
 // Rutas del administrador

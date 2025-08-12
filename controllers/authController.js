@@ -16,37 +16,39 @@ const authController = {
 
   // Procesar login
   login: async (req, res) => {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
     
-    try {
-      const user = await User.findByUsername(username);
+  try {
+    const user = await User.findByUsername(username);
       
-      // Verificación combinada para no revelar qué está incorrecto
-      if (!user || !(await User.comparePassword(password, user.contraseña))) {
-        req.flash('error_msg', 'Usuario o contraseña incorrectos');
+    if (!user || !(await User.comparePassword(password, user.contraseña))) {
+      req.flash('error_msg', 'Usuario o contraseña incorrectos');
+      return res.redirect('/login');
+    }
+      
+    // Guardar TODOS los datos necesarios en sesión
+    req.session.user = {
+      id: user.pk_usuario,
+      username: user.nombre_usuario,
+      rol: user.rol_nombre, // Asegúrate que este campo coincide con lo que espera checkRole
+      empaque_id: user.fk_empaque,
+      empaque_nombre: user.nombre_empaque,
+      // Agrega cualquier otro dato necesario
+    };
+
+      
+       // Redirigir según el rol
+    switch (user.rol_nombre) {
+      case 'administrador':
+        return res.redirect('/admin');
+      case 'supervisor':
+        return res.redirect('/supervisor');
+      case 'empleado':
+        return res.redirect('/employee');
+      default:
+        req.flash('error_msg', 'Rol no reconocido');
         return res.redirect('/login');
-      }
-      
-      // Guardar usuario en sesión (sin la contraseña)
-      req.session.user = {
-        id: user.pk_usuario,
-        username: user.nombre_usuario,
-        rol: user.rol_nombre,
-        empaque_id: user.fk_empaque,
-        empaque_nombre: user.nombre_empaque
-      };
-      
-      // Redirigir según el rol
-      switch (user.rol_nombre) {
-        case 'administrador':
-          return res.redirect('/admin');
-        case 'supervisor':
-          return res.redirect('/supervisor');
-        case 'empleado':
-          return res.redirect('/employee');
-        default:
-          return res.redirect('/');
-      }
+    }
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Error al iniciar sesión');
