@@ -1,0 +1,43 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Rol</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/roles/add" id="rolForm">
+    <div class="mb-3">
+      <label for="rol" class="form-label">Nombre del Rol *</label>
+      <input type="text" class="form-control" id="rol" name="rol" required
+             placeholder="Ej: Administrador, Supervisor, etc.">
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Rol</button>
+      <a href="/admin/roles" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('rolForm').addEventListener('submit', function(e) {
+    const rolInput = document.getElementById('rol');
+    
+    if (!rolInput.value.trim()) {
+      e.preventDefault();
+      rolInput.classList.add('is-invalid');
+      alert('El nombre del rol es obligatorio');
+    } else {
+      rolInput.classList.remove('is-invalid');
+    }
+  });
+});
+</script>

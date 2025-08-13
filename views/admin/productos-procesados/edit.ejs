@@ -1,0 +1,93 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Editar Producto Procesado</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/productos-procesados/edit/<%= producto.pk_producto_procesado %>" id="productoForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="pedido_id" class="form-label">Pedido *</label>
+          <select class="form-select" id="pedido_id" name="pedido_id" required>
+            <option value="">Seleccione un pedido...</option>
+            <% pedidos.forEach(pedido => { %>
+              <option value="<%= pedido.pk_pedido %>" 
+                <%= pedido.pk_pedido == producto.fk_pedido ? 'selected' : '' %>>
+                <%= pedido.proveedor_nombre %> - 
+                <%= pedido.categoria_nombre %> - 
+                <%= new Date(pedido.dia_hora_llegada).toLocaleDateString() %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria_id" class="form-label">Categoría de Producto *</label>
+          <select class="form-select" id="categoria_id" name="categoria_id" required>
+            <option value="">Seleccione una categoría...</option>
+            <% categorias.forEach(categoria => { %>
+              <option value="<%= categoria.pk_categoria_producto %>"
+                <%= categoria.pk_categoria_producto == producto.fk_categoria_producto ? 'selected' : '' %>>
+                <%= categoria.nombre_categoria %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="tipo_unidad_id" class="form-label">Tipo de Unidad *</label>
+          <select class="form-select" id="tipo_unidad_id" name="tipo_unidad_id" required>
+            <option value="">Seleccione un tipo de unidad...</option>
+            <% tiposUnidad.forEach(tipo => { %>
+              <option value="<%= tipo.pk_tipo_unidad %>"
+                <%= tipo.pk_tipo_unidad == producto.fk_tipo_unidad ? 'selected' : '' %>>
+                <%= tipo.nombre_tipo_unidad %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+      <a href="/admin/productos-procesados" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('productoForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obligatorios
+    const requiredFields = ['pedido_id', 'categoria_id', 'tipo_unidad_id'];
+    requiredFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (!field.value) {
+        isValid = false;
+        field.classList.add('is-invalid');
+      } else {
+        field.classList.remove('is-invalid');
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Complete todos los campos obligatorios');
+    }
+  });
+});
+</script>

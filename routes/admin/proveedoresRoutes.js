@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const proveedorController = require('../../controllers/proveedorController');
+const proveedorController = require('../../controllers/admin/proveedorController');
 const { isAuthenticated } = require('../../middlewares/authMiddleware');
 const checkRole = require('../../middlewares/roleMiddleware');
 

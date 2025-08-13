@@ -1,0 +1,130 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Pedido</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/pedidos/add" id="pedidoForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="proveedor_id" class="form-label">Proveedor *</label>
+          <select class="form-select" id="proveedor_id" name="proveedor_id" required>
+            <option value="">Seleccione un proveedor...</option>
+            <% proveedores.forEach(proveedor => { %>
+              <option value="<%= proveedor.pk_proveedor %>">
+                <%= proveedor.nombre_comercial %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria_id" class="form-label">Categoría de Producto *</label>
+          <select class="form-select" id="categoria_id" name="categoria_id" required>
+            <option value="">Seleccione una categoría...</option>
+            <% categorias.forEach(categoria => { %>
+              <option value="<%= categoria.pk_categoria_producto %>">
+                <%= categoria.nombre_categoria %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="transporte_id" class="form-label">Transporte (Opcional)</label>
+          <select class="form-select" id="transporte_id" name="transporte_id">
+            <option value="">Sin transporte asignado</option>
+            <% transportes.forEach(transporte => { %>
+              <option value="<%= transporte.pk_transporte %>">
+                <%= transporte.numero_placa %> (<%= transporte.marca %>)
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="peso" class="form-label">Peso (kg) *</label>
+          <input type="number" step="0.01" class="form-control" id="peso" name="peso" required>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="fecha_llegada" class="form-label">Fecha de Llegada *</label>
+            <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="hora_llegada" class="form-label">Hora de Llegada *</label>
+            <input type="time" class="form-control" id="hora_llegada" name="hora_llegada" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="estado" class="form-label">Estado *</label>
+          <select class="form-select" id="estado" name="estado" required>
+            <option value="true">Pendiente</option>
+            <option value="false">Entregado</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="observaciones" class="form-label">Observaciones</label>
+          <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Pedido</button>
+      <a href="/admin/pedidos" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Establecer fecha mínima como hoy
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha_llegada').min = today;
+  
+  // Validación del formulario
+  document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obligatorios
+    const requiredFields = ['proveedor_id', 'categoria_id', 'peso', 'fecha_llegada', 'hora_llegada'];
+    requiredFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (!field.value) {
+        isValid = false;
+        field.classList.add('is-invalid');
+      } else {
+        field.classList.remove('is-invalid');
+      }
+    });
+    
+    // Validar peso positivo
+    const peso = parseFloat(document.getElementById('peso').value);
+    if (isNaN(peso) || peso <= 0) {
+      isValid = false;
+      document.getElementById('peso').classList.add('is-invalid');
+    } else {
+      document.getElementById('peso').classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Complete todos los campos obligatorios correctamente');
+    }
+  });
+});
+</script>

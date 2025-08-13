@@ -1,6 +1,6 @@
-const Proveedor = require('../models/proveedor');
-const DatoPersona = require('../models/DatoPersona');
-const Empresa = require('../models/Empresa');
+const Proveedor = require('../../models/proveedor');
+const DatoPersona = require('../../models/DatoPersona');
+const Empresa = require('../../models/Empresa');
 
 const proveedorController = {
   showAddForm: async (req, res) => {

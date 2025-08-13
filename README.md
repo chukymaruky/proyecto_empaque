@@ -1,3 +1,2 @@
 # proyecto_empaque
-En este commit se han creado los modulos de agregar empresas, proveedores, usuario
-ademas de agregar una lista de enlaces en el dashboard 
+En este commit se han creado multiples modulos, lo que sucede con esta version es que se necesitan de modelos faltantes para que se muestren las vistas

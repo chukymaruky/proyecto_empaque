@@ -1,6 +1,6 @@
-const User = require('../../models/User');
-const Role = require('../../models/Role');
-const Empaque = require('../../models/Empaque');
+const User = require('../models/User');
+const Role = require('../models/Role');
+const Empaque = require('../models/empaque');
 
 const userController = {
   showAddForm: async (req, res) => {

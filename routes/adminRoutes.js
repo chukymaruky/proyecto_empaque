@@ -10,6 +10,9 @@ const categoriasRoutes = require('./admin/categoriasRoutes');
 const clientesRoutes = require('./admin/clientesRoutes');
 const empleadosRoutes = require('./admin/empleadosRoutes');
 const gastosRoutes = require('./admin/gastosRoutes');
+const pedidosRoutes = require('./admin/pedidosRoutes');
+const productosProcesadosRoutes = require('./admin/productosProcesadosRoutes');
+const rolesRoutes = require('./admin/rolesRoutes');
 
 // Solo admin puede acceder
 router.use(isAuthenticated, checkRole(['administrador']));
@@ -32,5 +35,11 @@ router.use('/', categoriasRoutes);
 router.use('/', empleadosRoutes);
 // Rutas de gastos
 router.use('/', gastosRoutes);
+// Rutas de pedidos
+router.use('/', pedidosRoutes);
+// Rutas de productos procesados
+router.use('/', productosProcesadosRoutes);
+// Rutas de roles
+router.use('/', rolesRoutes);
 
 module.exports = router;

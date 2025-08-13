@@ -1,5 +1,5 @@
-const Empresa = require('../models/Empresa');
-const validateRFC = require('../helpers/rfcValidator');
+const Empresa = require('../../models/Empresa');
+const validateRFC = require('../../helpers/rfcValidator');
 
 const empresaController = {
   showAddForm: (req, res) => {

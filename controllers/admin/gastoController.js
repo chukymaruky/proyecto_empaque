@@ -1,4 +1,4 @@
-const Gasto = require('../../models/Gasto');
+const Gasto = require('../../models/gasto');
 
 const gastoController = {
   showAddForm: async (req, res) => {

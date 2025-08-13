@@ -1,4 +1,4 @@
-const Empleado = require('../../models/Empleado');
+const Empleado = require('../../models/empleado');
 const User = require('../../models/User');
 
 const empleadoController = {

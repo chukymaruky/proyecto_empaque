@@ -1,4 +1,4 @@
-const CategoriaProducto = require('../../models/CategoriaProducto');
+const CategoriaProducto = require('../../models/categoriaProducto');
 
 const categoriaController = {
   showAddForm: (req, res) => {
