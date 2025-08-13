@@ -1,0 +1,70 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Registrar Nuevo Gasto</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/gastos/add">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="concepto" class="form-label">Concepto *</label>
+          <input type="text" class="form-control" id="concepto" name="concepto" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="monto" class="form-label">Monto *</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" id="monto" name="monto" 
+                   step="0.01" min="0.01" required>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="tipo_gasto_id" class="form-label">Tipo de Gasto *</label>
+          <select class="form-select" id="tipo_gasto_id" name="tipo_gasto_id" required>
+            <option value="">Seleccione un tipo...</option>
+            <% tiposGasto.forEach(tipo => { %>
+              <option value="<%= tipo.pk_tipo_gasto %>"><%= tipo.tipo_gasto %></option>
+            <% }); %>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="pedido_id" class="form-label">Asociar a Pedido (opcional)</label>
+          <select class="form-select" id="pedido_id" name="pedido_id">
+            <option value="">No asociar a pedido</option>
+            <% pedidos.forEach(pedido => { %>
+              <option value="<%= pedido.pk_pedido %>">Pedido #<%= pedido.pk_pedido %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Registrar Gasto</button>
+    <a href="/admin/gastos" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+// Validación en cliente
+document.querySelector('form').addEventListener('submit', function(e) {
+  const monto = parseFloat(document.getElementById('monto').value);
+  if (isNaN(monto) || monto <= 0) {
+    e.preventDefault();
+    alert('El monto debe ser un número mayor a cero');
+    document.getElementById('monto').focus();
+  }
+});
+</script>

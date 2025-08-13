@@ -64,6 +64,19 @@ class User {
   static async comparePassword(password, hashedPassword) {
     return await bcrypt.compare(password, hashedPassword);
   }
+
+  static async getNonEmployees() {
+  const query = `
+    SELECT u.pk_usuario, u.nombre_usuario, dp.nombres, dp.primer_apellido
+    FROM usuario u
+    JOIN dato_persona dp ON u.fk_dato_persona = dp.pk_dato_persona
+    LEFT JOIN empleado e ON u.pk_usuario = e.fk_usuario
+    WHERE e.pk_empleado IS NULL
+    ORDER BY dp.nombres, dp.primer_apellido
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+}
 }
 
 module.exports = User;

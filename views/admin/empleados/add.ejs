@@ -1,0 +1,44 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Registrar Nuevo Empleado</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/empleados/add">
+    <div class="mb-3">
+      <label for="usuario_id" class="form-label">Seleccione un Usuario *</label>
+      <select class="form-select" id="usuario_id" name="usuario_id" required>
+        <option value="">Seleccione un usuario...</option>
+        <% usuarios.forEach(usuario => { %>
+          <option value="<%= usuario.pk_usuario %>">
+            <%= usuario.nombres %> <%= usuario.primer_apellido %>
+            (<%= usuario.nombre_usuario %>)
+          </option>
+        <% }); %>
+      </select>
+      <small class="form-text text-muted">Solo se muestran usuarios que no son empleados</small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Registrar Empleado</button>
+    <a href="/admin/empleados" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+// Validación en cliente
+document.querySelector('form').addEventListener('submit', function(e) {
+  const usuarioSelect = document.getElementById('usuario_id');
+  if (usuarioSelect.value === '') {
+    e.preventDefault();
+    alert('Debe seleccionar un usuario');
+    usuarioSelect.focus();
+  }
+});
+</script>

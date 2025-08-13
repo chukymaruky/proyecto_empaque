@@ -1,0 +1,45 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Cliente</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/clientes/add">
+    <div class="mb-3">
+      <label for="empresa_id" class="form-label">Seleccione una Empresa *</label>
+      <select class="form-select" id="empresa_id" name="empresa_id" required>
+        <option value="">Seleccione una empresa...</option>
+        <% empresas.forEach(empresa => { %>
+          <option value="<%= empresa.pk_empresa %>">
+            <%= empresa.razon_social %> 
+            <% if (empresa.nombre_comercial) { %>
+              (<%= empresa.nombre_comercial %>)
+            <% } %>
+          </option>
+        <% }); %>
+      </select>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Registrar Cliente</button>
+    <a href="/admin/clientes" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+// Validación en cliente
+document.querySelector('form').addEventListener('submit', function(e) {
+  const empresaSelect = document.getElementById('empresa_id');
+  if (empresaSelect.value === '') {
+    e.preventDefault();
+    alert('Debe seleccionar una empresa');
+    empresaSelect.focus();
+  }
+});
+</script>

@@ -1,0 +1,35 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nueva Categoría de Producto</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/categorias/add">
+    <div class="mb-3">
+      <label for="nombre_categoria" class="form-label">Nombre de la Categoría *</label>
+      <input type="text" class="form-control" id="nombre_categoria" name="nombre_categoria" 
+             value="<%= formData ? formData.nombre_categoria : '' %>" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+    <a href="/admin/categorias" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+// Validación en cliente
+document.querySelector('form').addEventListener('submit', function(e) {
+  const nombre = document.getElementById('nombre_categoria').value.trim();
+  if (nombre.length < 3) {
+    e.preventDefault();
+    alert('El nombre de la categoría debe tener al menos 3 caracteres');
+  }
+});
+</script>

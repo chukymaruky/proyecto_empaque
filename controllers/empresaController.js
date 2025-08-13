@@ -1,4 +1,4 @@
-const Empresa = require('../models/empresa');
+const Empresa = require('../models/Empresa');
 const validateRFC = require('../helpers/rfcValidator');
 
 const empresaController = {
