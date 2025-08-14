@@ -9,9 +9,9 @@ const checkRole = require('../../middlewares/roleMiddleware');
 router.use(isAuthenticated, checkRole(['administrador']));
 
 // Rutas de roles
-router.get('/roles', rolController.listRoles);
-router.get('/roles/add', rolController.showAddForm);
-router.post('/roles/add', rolController.addRol);
-router.post('/roles/delete/:id', rolController.deleteRol);
+router.get('/rol', rolController.listRoles);
+router.get('/rol/add', rolController.showAddForm);
+router.post('/rol/add', rolController.addRol);
+router.post('/rol/delete/:id', rolController.deleteRol);
 
 module.exports = router;

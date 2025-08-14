@@ -3,19 +3,23 @@
 <div class="container mt-4">
   <h2>Agregar Nuevo Rol</h2>
   
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
-  
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
-
-  <form method="POST" action="/admin/roles/add" id="rolForm">
+  <form method="POST" action="/admin/rol/add" id="rolForm">
     <div class="mb-3">
       <label for="rol" class="form-label">Nombre del Rol *</label>
       <input type="text" class="form-control" id="rol" name="rol" required
              placeholder="Ej: Administrador, Supervisor, etc.">
+    </div>
+
+    <div class="mb-3">
+      <label for="empaque" class="form-label">Empaque *</label>
+      <select class="form-select" id="empaque" name="empaque" required>
+        <option value="">Seleccione un empaque</option>
+        <% if (empaques && empaques.length > 0) { %>
+          <% empaques.forEach(empaque => { %>
+            <option value="<%= empaque.pk_empaque %>"><%= empaque.nombre_empaque %></option>
+          <% }); %>
+        <% } %>
+      </select>
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -27,16 +31,30 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Validación del formulario
-  document.getElementById('rolForm').addEventListener('submit', function(e) {
-    const rolInput = document.getElementById('rol');
+  const form = document.getElementById('rolForm');
+  const rolInput = document.getElementById('rol');
+  const empaqueSelect = document.getElementById('empaque');
+
+  form.addEventListener('submit', function(e) {
+    let isValid = true;
     
     if (!rolInput.value.trim()) {
-      e.preventDefault();
       rolInput.classList.add('is-invalid');
-      alert('El nombre del rol es obligatorio');
+      isValid = false;
     } else {
       rolInput.classList.remove('is-invalid');
+    }
+
+    if (!empaqueSelect.value) {
+      empaqueSelect.classList.add('is-invalid');
+      isValid = false;
+    } else {
+      empaqueSelect.classList.remove('is-invalid');
+    }
+
+    if (!isValid) {
+      e.preventDefault();
+      alert('Por favor complete todos los campos obligatorios');
     }
   });
 });

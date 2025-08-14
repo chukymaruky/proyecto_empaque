@@ -8,7 +8,27 @@
     </a>
   </div>
 
- 
+  <!-- Filtros de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o usuario...">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <select id="empaqueFilter" class="form-select">
+        <option value="">Todos los empaques</option>
+        <% if (empaques && empaques.length) { %>
+          <% empaques.forEach(empaque => { %>
+            <option value="<%= empaque.pk_empaque %>">
+              <%= empaque.nombre_empaque %>
+            </option>
+          <% }); %>
+        <% } %>
+      </select>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped">
@@ -21,10 +41,12 @@
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="usersTableBody">
         <% if (users && users.length > 0) { %>
           <% users.forEach(user => { %>
-            <tr>
+            <tr data-nombre="<%= `${user.nombres} ${user.primer_apellido}`.toLowerCase() %>"
+                data-usuario="<%= user.nombre_usuario.toLowerCase() %>"
+                data-empaque="<%= user.fk_empaque || '' %>">
               <td><%= user.nombre_usuario %></td>
               <td><%= user.nombres %> <%= user.primer_apellido %></td>
               <td><%= user.rol %></td>
@@ -50,3 +72,35 @@
     </table>
   </div>
 </div>
+
+<script>
+// Funcionalidad de búsqueda y filtrado
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const empaqueFilter = document.getElementById('empaqueFilter');
+  const usersRows = document.querySelectorAll('#usersTableBody tr');
+
+  function filterUsers() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedEmpaque = empaqueFilter.value;
+    
+    usersRows.forEach(row => {
+      const nombre = row.getAttribute('data-nombre');
+      const usuario = row.getAttribute('data-usuario');
+      const empaqueId = row.getAttribute('data-empaque');
+      
+      const matchesSearch = nombre.includes(searchTerm) || usuario.includes(searchTerm);
+      const matchesEmpaque = !selectedEmpaque || empaqueId === selectedEmpaque;
+      
+      if (matchesSearch && matchesEmpaque) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  searchInput.addEventListener('input', filterUsers);
+  empaqueFilter.addEventListener('change', filterUsers);
+});
+</script>

@@ -1,10 +1,15 @@
 const Rol = require('../../models/rol');
+const Empaque = require('../../models/empaque');
 
 const rolController = {
   showAddForm: async (req, res) => {
     try {
-      res.render('admin/roles/add', {
+      // Obtener todos los empaques activos
+      const empaques = await Empaque.getAllActive();
+      
+      res.render('admin/rol/add', {
         user: req.session.user,
+        empaques,
         error_msg: req.flash('error_msg'),
         success_msg: req.flash('success_msg'),
         formData: null
@@ -12,40 +17,47 @@ const rolController = {
     } catch (error) {
       console.error(error);
       req.flash('error_msg', 'Error al cargar el formulario');
-      res.redirect('/admin/roles');
+      res.redirect('/admin/rol');
     }
   },
 
-  addRol: async (req, res) => {
-    const { rol } = req.body;
-    const { empaque_id } = req.session.user;
+   addRol: async (req, res) => {
+    const { rol, empaque } = req.body;
+    const { empaque_id } = req.session.user; // Empaque del usuario logueado
 
     try {
       // Validaciones básicas
-      if (!rol) {
-        req.flash('error_msg', 'El nombre del rol es obligatorio');
-        return res.redirect('/admin/roles/add');
+      if (!rol || !empaque) {
+        req.flash('error_msg', 'Todos los campos son obligatorios');
+        return res.redirect('/admin/rol/add');
       }
 
-      // Verificar si el rol ya existe
-      const roleExists = await Rol.isRoleExists(rol, empaque_id);
+      // Verificar si el empaque existe
+      const empaqueExists = await Empaque.getById(empaque);
+      if (!empaqueExists) {
+        req.flash('error_msg', 'El empaque seleccionado no existe');
+        return res.redirect('/admin/rol/add');
+      }
+
+       // Verificar si el rol ya existe para este empaque
+      const roleExists = await Rol.isRoleExists(rol, empaque);
       if (roleExists) {
-        req.flash('error_msg', 'Este rol ya está registrado');
-        return res.redirect('/admin/roles/add');
+        req.flash('error_msg', 'Este rol ya está registrado para el empaque seleccionado');
+        return res.redirect('/admin/rol/add');
       }
 
       // Crear rol
       await Rol.create({
         rol,
-        fk_empaque: empaque_id
+        fk_empaque: empaque
       });
 
       req.flash('success_msg', 'Rol registrado exitosamente');
-      res.redirect('/admin/roles');
+      res.redirect('/admin/rol');
     } catch (error) {
       console.error('Error al crear rol:', error);
       req.flash('error_msg', 'Error al registrar el rol');
-      res.redirect('/admin/roles/add');
+      res.redirect('/admin/rol/add');
     }
   },
 
@@ -57,10 +69,10 @@ const rolController = {
       const rol = await Rol.getById(id, empaque_id);
       if (!rol) {
         req.flash('error_msg', 'Rol no encontrado');
-        return res.redirect('/admin/roles');
+        return res.redirect('/admin/rol');
       }
 
-      res.render('admin/roles/edit', {
+      res.render('admin/rol/edit', {
         user: req.session.user,
         rol,
         error_msg: req.flash('error_msg'),
@@ -69,7 +81,7 @@ const rolController = {
     } catch (error) {
       console.error('Error al cargar formulario de edición:', error);
       req.flash('error_msg', 'Error al cargar el formulario de edición');
-      res.redirect('/admin/roles');
+      res.redirect('/admin/rol');
     }
   },
 
@@ -82,14 +94,14 @@ const rolController = {
       // Validaciones básicas
       if (!rol) {
         req.flash('error_msg', 'El nombre del rol es obligatorio');
-        return res.redirect(`/admin/roles/edit/${id}`);
+        return res.redirect(`/admin/rol/edit/${id}`);
       }
 
       // Verificar si el rol ya existe (excluyendo el actual)
       const roleExists = await Rol.isRoleExists(rol, empaque_id, id);
       if (roleExists) {
         req.flash('error_msg', 'Este rol ya está registrado');
-        return res.redirect(`/admin/roles/edit/${id}`);
+        return res.redirect(`/admin/rol/edit/${id}`);
       }
 
       // Actualizar rol
@@ -101,15 +113,15 @@ const rolController = {
 
       if (!updatedRol) {
         req.flash('error_msg', 'Rol no encontrado o no tienes permiso');
-        return res.redirect('/admin/roles');
+        return res.redirect('/admin/rol');
       }
 
       req.flash('success_msg', 'Rol actualizado exitosamente');
-      res.redirect('/admin/roles');
+      res.redirect('/admin/rol');
     } catch (error) {
       console.error('Error al actualizar rol:', error);
       req.flash('error_msg', 'Error al actualizar el rol');
-      res.redirect(`/admin/roles/edit/${id}`);
+      res.redirect(`/admin/rol/edit/${id}`);
     }
   },
 
@@ -126,21 +138,21 @@ const rolController = {
       } else {
         req.flash('success_msg', 'Rol eliminado exitosamente');
       }
-      
-      res.redirect('/admin/roles');
+
+      res.redirect('/admin/rol');
     } catch (error) {
       console.error('Error al eliminar rol:', error);
       req.flash('error_msg', 'Error al eliminar el rol');
-      res.redirect('/admin/roles');
+      res.redirect('/admin/rol');
     }
   },
 
   listRoles: async (req, res) => {
     try {
       const { empaque_id } = req.session.user;
-      const roles = await Rol.getAllByEmpaque(empaque_id);
+      const roles = await Rol.getAll();
 
-      res.render('admin/roles/list', {
+      res.render('admin/rol/list', {
         user: req.session.user,
         roles,
         error_msg: req.flash('error_msg'),

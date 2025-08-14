@@ -2,34 +2,58 @@
 
 <div class="container mt-4">
   <h2>Agregar Nueva Categoría de Producto</h2>
-  
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
-  
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
 
-  <form method="POST" action="/admin/categorias/add">
+  <form method="POST" action="/admin/categorias/add" id="categoriaForm">
     <div class="mb-3">
       <label for="nombre_categoria" class="form-label">Nombre de la Categoría *</label>
       <input type="text" class="form-control" id="nombre_categoria" name="nombre_categoria" 
-             value="<%= formData ? formData.nombre_categoria : '' %>" required>
+             value="<%= formData ? formData.nombre_categoria : '' %>" required
+             placeholder="Ej: Frutas, Verduras, Lácteos, etc.">
     </div>
     
-    <button type="submit" class="btn btn-primary">Guardar Categoría</button>
-    <a href="/admin/categorias" class="btn btn-secondary">Cancelar</a>
+    <div class="mb-3">
+      <label for="empaque" class="form-label">Empaque *</label>
+      <select class="form-select" id="empaque" name="fk_empaque" required>
+        <option value="">Seleccione un empaque</option>
+        <% if (empaques && empaques.length > 0) { %>
+          <% empaques.forEach(empaque => { %>
+            <option value="<%= empaque.pk_empaque %>" 
+              <%= (formData && formData.fk_empaque == empaque.pk_empaque) ? 'selected' : '' %>>
+              <%= empaque.nombre_empaque %>
+            </option>
+          <% }); %>
+        <% } else { %>
+          <option value="" disabled>No hay empaques disponibles</option>
+        <% } %>
+      </select>
+    </div>
+    
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+      <a href="/admin/categorias" class="btn btn-secondary">Cancelar</a>
+    </div>
   </form>
 </div>
 
 <script>
-// Validación en cliente
-document.querySelector('form').addEventListener('submit', function(e) {
+document.getElementById('categoriaForm').addEventListener('submit', function(e) {
   const nombre = document.getElementById('nombre_categoria').value.trim();
+  const empaque = document.getElementById('empaque').value;
+  
+  let isValid = true;
+  
   if (nombre.length < 3) {
-    e.preventDefault();
     alert('El nombre de la categoría debe tener al menos 3 caracteres');
+    isValid = false;
+  }
+  
+  if (!empaque) {
+    alert('Debe seleccionar un empaque');
+    isValid = false;
+  }
+  
+  if (!isValid) {
+    e.preventDefault();
   }
 });
 </script>

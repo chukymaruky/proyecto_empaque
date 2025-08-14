@@ -8,7 +8,23 @@
     </a>
   </div>
 
-  
+  <!-- Filtros de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar categoría...">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <select id="empaqueFilter" class="form-select">
+        <option value="">Todos los empaques</option>
+        <% empaques.forEach(empaque => { %>
+          <option value="<%= empaque.pk_empaque %>"><%= empaque.nombre_empaque %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped table-hover">
@@ -16,20 +32,23 @@
         <tr>
           <th>ID</th>
           <th>Nombre</th>
+          <th>Empaque</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         <% if (categorias.length === 0) { %>
           <tr>
-            <td colspan="3" class="text-center">No hay categorías registradas</td>
+            <td colspan="4" class="text-center">No hay categorías registradas</td>
           </tr>
         <% } %>
         
         <% categorias.forEach(categoria => { %>
-          <tr>
+          <tr data-nombre="<%= categoria.nombre_categoria.toLowerCase() %>" 
+              data-empaque="<%= categoria.fk_empaque %>">
             <td><%= categoria.pk_categoria_producto %></td>
             <td><%= categoria.nombre_categoria %></td>
+            <td><%= categoria.nombre_empaque %></td>
             <td>
               <a href="/admin/categorias/edit/<%= categoria.pk_categoria_producto %>" 
                  class="btn btn-sm btn-info">
@@ -49,3 +68,33 @@
     </table>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const empaqueFilter = document.getElementById('empaqueFilter');
+  const rows = document.querySelectorAll('tbody tr[data-nombre]');
+
+  function filterCategories() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const selectedEmpaque = empaqueFilter.value;
+    
+    rows.forEach(row => {
+      const nombre = row.getAttribute('data-nombre');
+      const empaqueId = row.getAttribute('data-empaque');
+      
+      const matchesSearch = searchTerm === '' || nombre.includes(searchTerm);
+      const matchesEmpaque = selectedEmpaque === '' || empaqueId === selectedEmpaque;
+      
+      row.style.display = (matchesSearch && matchesEmpaque) ? '' : 'none';
+    });
+  }
+
+  // Aplicar filtros iniciales
+  filterCategories();
+  
+  // Event listeners
+  searchInput.addEventListener('input', filterCategories);
+  empaqueFilter.addEventListener('change', filterCategories);
+});
+</script>

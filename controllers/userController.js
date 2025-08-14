@@ -101,21 +101,13 @@ checkUsername: async (req, res) => {
 
 listUsers: async (req, res) => {
   try {
-    const query = `
-      SELECT u.pk_usuario, u.nombre_usuario, 
-             dp.nombres, dp.primer_apellido,
-             r.rol, e.nombre_empaque
-      FROM usuario u
-      JOIN dato_persona dp ON u.fk_dato_persona = dp.pk_dato_persona
-      JOIN rol r ON u.fk_rol = r.pk_rol
-      JOIN empaque e ON u.fk_empaque = e.pk_empaque
-      ORDER BY u.nombre_usuario
-    `;
-    const { rows: users } = await pool.query(query);
+    const users = await User.getAllWithDetails();
+    const empaques = await Empaque.getAllActive(); // Asegúrate de tener este método
     
     res.render('admin/users/list', {
       user: req.session.user,
       users,
+      empaques, // Pasamos la lista de empaques para el filtro
       success_msg: req.flash('success_msg'),
       error_msg: req.flash('error_msg')
     });

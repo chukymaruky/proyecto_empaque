@@ -3,12 +3,37 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Listado de Roles</h2>
-    <a href="/admin/roles/add" class="btn btn-success">
+    <a href="/admin/rol/add" class="btn btn-success">
       <i class="fas fa-plus"></i> Nuevo Rol
     </a>
   </div>
 
-  
+  <!-- Filtros de búsqueda y empaque -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre de rol...">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <select id="empaqueFilter" class="form-select">
+        <option value="">Todos los empaques</option>
+        <% 
+          // Obtener empaques únicos de los roles
+          const empaquesUnicos = [];
+          roles.forEach(r => {
+            if (r.fk_empaque && !empaquesUnicos.some(e => e.fk_empaque == r.fk_empaque)) {
+              empaquesUnicos.push({ fk_empaque: r.fk_empaque, nombre_empaque: r.nombre_empaque });
+            }
+          });
+        %>
+        <% empaquesUnicos.forEach(empaque => { %>
+          <option value="<%= empaque.fk_empaque %>"><%= empaque.nombre_empaque %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped table-hover">
@@ -27,16 +52,14 @@
             <td colspan="5" class="text-center">No hay roles registrados</td>
           </tr>
         <% } %>
-        
         <% roles.forEach(rol => { %>
-          <tr>
+          <tr data-rol="<%= rol.rol.toLowerCase() %>" data-empaque="<%= rol.fk_empaque %>">
             <td><%= rol.pk_rol %></td>
             <td><%= rol.rol %></td>
             <td><%= rol.nombre_empaque %></td>
             <td><%= new Date(rol.fecha).toLocaleDateString() %></td>
             <td>
-              <form action="/admin/roles/delete/<%= rol.pk_rol %>" 
-                    method="POST" style="display:inline;">
+              <form action="/admin/rol/delete/<%= rol.pk_rol %>" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-sm btn-danger" 
                         onclick="return confirm('¿Estás seguro de eliminar este rol?')"
                         title="Eliminar">
@@ -50,3 +73,38 @@
     </table>
   </div>
 </div>
+
+<script>
+// Versión mejorada del filtrado
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const empaqueFilter = document.getElementById('empaqueFilter');
+  const rows = document.querySelectorAll('tbody tr[data-rol]');
+
+  function filterRoles() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const selectedEmpaque = empaqueFilter.value;
+    
+    rows.forEach(row => {
+      const rolText = row.getAttribute('data-rol');
+      const empaqueId = row.getAttribute('data-empaque');
+      
+      // Verificar coincidencia con búsqueda
+      const matchesSearch = searchTerm === '' || rolText.includes(searchTerm);
+      
+      // Verificar coincidencia con empaque
+      const matchesEmpaque = selectedEmpaque === '' || empaqueId === selectedEmpaque;
+      
+      // Mostrar u ocultar fila según coincidencias
+      row.style.display = (matchesSearch && matchesEmpaque) ? '' : 'none';
+    });
+  }
+
+  // Inicializar filtros
+  filterRoles();
+  
+  // Event listeners
+  searchInput.addEventListener('input', filterRoles);
+  empaqueFilter.addEventListener('change', filterRoles);
+});
+</script>

@@ -2,6 +2,21 @@ const pool = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 class User {
+  static async getByEmpaque(empaqueId) {
+    const query = `
+      SELECT u.pk_usuario, u.nombre_usuario,
+             dp.nombres, dp.primer_apellido,
+             r.rol, e.nombre_empaque, u.fk_empaque
+      FROM usuario u
+      JOIN dato_persona dp ON u.fk_dato_persona = dp.pk_dato_persona
+      JOIN rol r ON u.fk_rol = r.pk_rol
+      JOIN empaque e ON u.fk_empaque = e.pk_empaque
+      WHERE u.fk_empaque = $1
+      ORDER BY dp.nombres, dp.primer_apellido
+    `;
+    const { rows } = await pool.query(query, [empaqueId]);
+    return rows;
+  }
   static async createWithDetails({ username, password, nombres, primer_apellido, segundo_apellido, fk_rol, fk_empaque }) {
     const client = await pool.connect();
     try {
@@ -82,7 +97,7 @@ static async getAllWithDetails() {
   const query = `
     SELECT u.pk_usuario, u.nombre_usuario, 
            dp.nombres, dp.primer_apellido,
-           r.rol, e.nombre_empaque
+           r.rol, e.nombre_empaque, u.fk_empaque
     FROM usuario u
     JOIN dato_persona dp ON u.fk_dato_persona = dp.pk_dato_persona
     JOIN rol r ON u.fk_rol = r.pk_rol
