@@ -1,0 +1,54 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Transportistas</h2>
+    <a href="/admin/transportistas/add" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nuevo Transportista
+    </a>
+  </div>
+
+  
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>Nombre</th>
+          <th>Empresa</th>
+          <th>Empaque</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (transportistas.length === 0) { %>
+          <tr>
+            <td colspan="4" class="text-center">No hay transportistas registrados</td>
+          </tr>
+        <% } %>
+        
+        <% transportistas.forEach(transportista => { %>
+          <tr>
+            <td><%= transportista.nombre_completo %></td>
+            <td><%= transportista.empresa_nombre || 'N/A' %></td>
+            <td><%= transportista.nombre_empaque %></td>
+            <td>
+              <a href="/admin/transportistas/edit/<%= transportista.pk_transportista %>" 
+                 class="btn btn-sm btn-warning" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/admin/transportistas/delete/<%= transportista.pk_transportista %>" 
+                    method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" 
+                        onclick="return confirm('¿Estás seguro de eliminar este transportista?')"
+                        title="Eliminar">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

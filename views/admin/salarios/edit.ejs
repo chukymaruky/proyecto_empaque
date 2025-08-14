@@ -1,0 +1,54 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Editar Salario</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <div class="mb-3">
+    <label class="form-label">Empleado</label>
+    <input type="text" class="form-control" 
+           value="<%= salario.nombre_empleado %>" readonly>
+  </div>
+
+  <form method="POST" action="/admin/salarios/edit/<%= salario.pk_salario %>" id="salarioForm">
+    <div class="mb-3">
+      <label for="cantidad_salario" class="form-label">Monto del Salario *</label>
+      <div class="input-group">
+        <span class="input-group-text">$</span>
+        <input type="number" step="0.01" class="form-control" 
+               id="cantidad_salario" name="cantidad_salario" 
+               min="0" required 
+               value="<%= salario.cantidad_salario %>">
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Actualizar Salario</button>
+      <a href="/admin/salarios" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('salarioForm').addEventListener('submit', function(e) {
+    const salarioInput = document.getElementById('cantidad_salario');
+    
+    if (!salarioInput.value || parseFloat(salarioInput.value) <= 0) {
+      e.preventDefault();
+      salarioInput.classList.add('is-invalid');
+      alert('El salario debe ser un número positivo');
+    } else {
+      salarioInput.classList.remove('is-invalid');
+    }
+  });
+});
+</script>

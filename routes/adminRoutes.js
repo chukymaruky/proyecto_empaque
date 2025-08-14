@@ -13,6 +13,13 @@ const gastosRoutes = require('./admin/gastosRoutes');
 const pedidosRoutes = require('./admin/pedidosRoutes');
 const productosProcesadosRoutes = require('./admin/productosProcesadosRoutes');
 const rolesRoutes = require('./admin/rolesRoutes');
+const salariosRoutes = require('./admin/salariosRoutes');
+const tiposGastoRoutes = require('./admin/tiposGastoRoutes');
+const tiposUnidadRoutes = require('./admin/tiposUnidadRoutes');
+const tiposVehiculoRoutes = require('./admin/tiposVehiculoRoutes');
+const transportesRoutes = require('./admin/transportesRoutes');
+const transportistasRoutes = require('./admin/transportistasRoutes');
+const ventasProductoRoutes = require('./admin/ventasProductoRoutes');
 
 // Solo admin puede acceder
 router.use(isAuthenticated, checkRole(['administrador']));
@@ -41,5 +48,19 @@ router.use('/', pedidosRoutes);
 router.use('/', productosProcesadosRoutes);
 // Rutas de roles
 router.use('/', rolesRoutes);
+// Rutas de salarios
+router.use('/', salariosRoutes);
+// Rutas de tipos de gasto
+router.use('/', tiposGastoRoutes);
+// Rutas de tipos de unidad
+router.use('/', tiposUnidadRoutes);
+// Rutas de tipos de vehículo
+router.use('/', tiposVehiculoRoutes);
+// Rutas de transportes
+router.use('/', transportesRoutes);
+// Rutas de transportistas
+router.use('/', transportistasRoutes);
+// Rutas de ventas de productos
+router.use('/', ventasProductoRoutes);  
 
 module.exports = router;

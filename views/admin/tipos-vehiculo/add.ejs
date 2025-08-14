@@ -1,0 +1,70 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Tipo de Vehículo</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/tipos-vehiculo/add" id="tipoVehiculoForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="tipo_vehiculo" class="form-label">Tipo de Vehículo *</label>
+          <input type="text" class="form-control" id="tipo_vehiculo" name="tipo_vehiculo" required
+                 placeholder="Ej: Camión, Furgoneta, Pickup, etc.">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="capacidad_carga_kg" class="form-label">Capacidad de Carga (kg) *</label>
+          <input type="number" step="0.01" class="form-control" 
+                 id="capacidad_carga_kg" name="capacidad_carga_kg" 
+                 min="0" required placeholder="Ej: 1000.50">
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Tipo de Vehículo</button>
+      <a href="/admin/tipos-vehiculo" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('tipoVehiculoForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obligatorios
+    const tipoInput = document.getElementById('tipo_vehiculo');
+    const capacidadInput = document.getElementById('capacidad_carga_kg');
+    
+    if (!tipoInput.value.trim()) {
+      isValid = false;
+      tipoInput.classList.add('is-invalid');
+    } else {
+      tipoInput.classList.remove('is-invalid');
+    }
+    
+    if (!capacidadInput.value || parseFloat(capacidadInput.value) <= 0) {
+      isValid = false;
+      capacidadInput.classList.add('is-invalid');
+    } else {
+      capacidadInput.classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Complete todos los campos obligatorios correctamente');
+    }
+  });
+});
+</script>

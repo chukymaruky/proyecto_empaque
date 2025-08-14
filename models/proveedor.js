@@ -13,6 +13,18 @@ class Proveedor {
     return rows[0];
   }
 
+  static async getAll() {
+  const query = `
+    SELECT p.*, dp.nombres, dp.primer_apellido, e.razon_social
+    FROM proveedor p
+    JOIN dato_persona dp ON p.fk_dato_persona = dp.pk_dato_persona
+    LEFT JOIN empresa e ON p.fk_empresa = e.pk_empresa
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+}
+
+
   static async getAllByEmpaque(fk_empaque) {
     const query = `
       SELECT p.*, dp.nombres, dp.primer_apellido, e.razon_social

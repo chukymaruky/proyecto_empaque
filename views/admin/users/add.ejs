@@ -58,14 +58,8 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="role_id">Rol *</label>
-          <select class="form-control" id="role_id" name="role_id" required>
-            <option value="">Seleccione un rol</option>
-            <% roles.forEach(role => { %>
-              <option value="<%= role.pk_rol %>" 
-                <%= formData && formData.role_id == role.pk_rol ? 'selected' : '' %>>
-                <%= role.rol %>
-              </option>
-            <% }); %>
+          <select class="form-control" id="role_id" name="role_id" required disabled>
+            <option value="">Primero seleccione un empaque</option>
           </select>
         </div>
       </div>
@@ -73,7 +67,7 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="empaque_id">Empaque *</label>
-          <select class="form-control" id="empaque_id" name="empaque_id" required>
+          <select class="form-control" id="empaque_id" name="empaque_id" required onchange="cargarRoles(this.value)">
             <option value="">Seleccione un empaque</option>
             <% empaques.forEach(empaque => { %>
               <option value="<%= empaque.pk_empaque %>"
@@ -85,7 +79,9 @@
         </div>
       </div>
     </div>
-    
+
+    <br>
+
     <button type="submit" class="btn btn-primary">Registrar Usuario</button>
     <a href="/admin/users" class="btn btn-secondary">Cancelar</a>
   </form>
@@ -96,11 +92,9 @@
 document.getElementById('username').addEventListener('blur', async function() {
   const username = this.value;
   if (username.length < 3) return;
-  
   try {
     const response = await fetch(`/admin/users/check-username?username=${encodeURIComponent(username)}`);
     const data = await response.json();
-    
     if (!data.available) {
       alert('Este nombre de usuario ya está en uso');
       this.focus();
@@ -109,12 +103,10 @@ document.getElementById('username').addEventListener('blur', async function() {
     console.error('Error al verificar usuario:', error);
   }
 });
-</script>
-<script>
+
 // Validación de contraseña en tiempo real
 const password = document.getElementById('password');
 const confirmPassword = document.getElementById('confirm_password');
-
 function validatePassword() {
   if (password.value !== confirmPassword.value) {
     confirmPassword.setCustomValidity('Las contraseñas no coinciden');
@@ -122,7 +114,48 @@ function validatePassword() {
     confirmPassword.setCustomValidity('');
   }
 }
-
 password.addEventListener('change', validatePassword);
 confirmPassword.addEventListener('keyup', validatePassword);
+
+// Adaptación: Cargar roles dinámicamente según el empaque seleccionado
+async function cargarRoles(empaque_id) {
+  const roleSelect = document.getElementById('role_id');
+  const API_URL = `/api/roles/${empaque_id}`;
+  roleSelect.innerHTML = '<option value="">Cargando roles...</option>';
+  roleSelect.disabled = true;
+  if (!empaque_id) {
+    roleSelect.innerHTML = '<option value="">Seleccione un empaque primero</option>';
+    return;
+  }
+  try {
+    const response = await fetch(API_URL, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const errorText = await response.text();
+      throw new Error(`Respuesta no es JSON: ${errorText.substring(0, 100)}...`);
+    }
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || `Error ${response.status}`);
+    }
+    if (data.length === 0) {
+      roleSelect.innerHTML = '<option value="">No hay roles disponibles</option>';
+    } else {
+      let options = '<option value="">Seleccione un rol</option>';
+      data.forEach(role => {
+        options += `<option value="${role.pk_rol}">${role.rol}</option>`;
+      });
+      roleSelect.innerHTML = options;
+      roleSelect.disabled = false;
+    }
+  } catch (error) {
+    console.error('Error al cargar roles:', error);
+    roleSelect.innerHTML = `<option value="">Error: ${error.message}</option>`;
+  }
+}
 </script>

@@ -1,0 +1,56 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Tipos de Vehículo</h2>
+    <a href="/admin/tipos-vehiculo/add" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nuevo Tipo
+    </a>
+  </div>
+
+ 
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Tipo de Vehículo</th>
+          <th>Capacidad Carga (kg)</th>
+          <th>Empaque</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (tiposVehiculo.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center">No hay tipos de vehículo registrados</td>
+          </tr>
+        <% } %>
+        
+        <% tiposVehiculo.forEach(tipo => { %>
+          <tr>
+            <td><%= tipo.pk_tipo_vehiculo %></td>
+            <td><%= tipo.tipo_vehiculo %></td>
+            <td><%= tipo.capacidad_carga_kg %></td>
+            <td><%= tipo.nombre_empaque %></td>
+            <td>
+              <a href="/admin/tipos-vehiculo/edit/<%= tipo.pk_tipo_vehiculo %>" 
+                 class="btn btn-sm btn-warning" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/admin/tipos-vehiculo/delete/<%= tipo.pk_tipo_vehiculo %>" 
+                    method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" 
+                        onclick="return confirm('¿Estás seguro de eliminar este tipo de vehículo?')"
+                        title="Eliminar">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

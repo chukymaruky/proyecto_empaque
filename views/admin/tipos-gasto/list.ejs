@@ -1,0 +1,56 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Tipos de Gasto</h2>
+    <a href="/admin/tipos-gasto/add" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nuevo Tipo
+    </a>
+  </div>
+
+ 
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Tipo de Gasto</th>
+          <th>Empaque</th>
+          <th>Fecha Registro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (tiposGasto.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center">No hay tipos de gasto registrados</td>
+          </tr>
+        <% } %>
+        
+        <% tiposGasto.forEach(tipo => { %>
+          <tr>
+            <td><%= tipo.pk_tipo_gasto %></td>
+            <td><%= tipo.tipo_gasto %></td>
+            <td><%= tipo.nombre_empaque %></td>
+            <td><%= new Date(tipo.fecha).toLocaleDateString() %></td>
+            <td>
+              <a href="/admin/tipos-gasto/edit/<%= tipo.pk_tipo_gasto %>" 
+                 class="btn btn-sm btn-warning" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form action="/admin/tipos-gasto/delete/<%= tipo.pk_tipo_gasto %>" 
+                    method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-danger" 
+                        onclick="return confirm('¿Estás seguro de eliminar este tipo de gasto?')"
+                        title="Eliminar">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Transportista</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/transportistas/add" id="transportistaForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="persona_id" class="form-label">Persona *</label>
+          <select class="form-select" id="persona_id" name="persona_id" required>
+            <option value="">Seleccione una persona...</option>
+            <% personas.forEach(persona => { %>
+              <option value="<%= persona.pk_dato_persona %>">
+                <%= persona.nombres %> <%= persona.primer_apellido %> 
+                <% if (persona.segundo_apellido) { %> <%= persona.segundo_apellido %> <% } %>
+              </option>
+            <% }); %>
+          </select>
+          <small class="text-muted">Solo se muestran personas no asignadas como transportistas o usuarios</small>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="empresa_id" class="form-label">Empresa (Opcional)</label>
+          <select class="form-select" id="empresa_id" name="empresa_id">
+            <option value="">Sin empresa asignada</option>
+            <% empresas.forEach(empresa => { %>
+              <option value="<%= empresa.pk_empresa %>">
+                <%= empresa.nombre_comercial || empresa.razon_social %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Transportista</button>
+      <a href="/admin/transportistas" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('transportistaForm').addEventListener('submit', function(e) {
+    const personaSelect = document.getElementById('persona_id');
+    
+    if (!personaSelect.value) {
+      e.preventDefault();
+      personaSelect.classList.add('is-invalid');
+      alert('Seleccione una persona');
+    } else {
+      personaSelect.classList.remove('is-invalid');
+    }
+  });
+});
+</script>

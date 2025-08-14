@@ -8,13 +8,7 @@
     </a>
   </div>
 
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
-  
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
+ 
 
   <div class="table-responsive">
     <table class="table table-striped">
@@ -28,24 +22,30 @@
         </tr>
       </thead>
       <tbody>
-        <% users.forEach(user => { %>
+        <% if (users && users.length > 0) { %>
+          <% users.forEach(user => { %>
+            <tr>
+              <td><%= user.nombre_usuario %></td>
+              <td><%= user.nombres %> <%= user.primer_apellido %></td>
+              <td><%= user.rol %></td>
+              <td><%= user.nombre_empaque %></td>
+              <td>
+                <a href="/admin/users/edit/<%= user.pk_usuario %>" class="btn btn-sm btn-info">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="/admin/users/delete/<%= user.pk_usuario %>" method="POST" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
           <tr>
-            <td><%= user.nombre_usuario %></td>
-            <td><%= user.nombres %> <%= user.primer_apellido %></td>
-            <td><%= user.rol %></td>
-            <td><%= user.nombre_empaque %></td>
-            <td>
-              <a href="/admin/users/edit/<%= user.pk_usuario %>" class="btn btn-sm btn-info">
-                <i class="fas fa-edit"></i>
-              </a>
-              <form action="/admin/users/delete/<%= user.pk_usuario %>" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </form>
-            </td>
+            <td colspan="5" class="text-center">No hay usuarios registrados</td>
           </tr>
-        <% }); %>
+        <% } %>
       </tbody>
     </table>
   </div>

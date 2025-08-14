@@ -1,0 +1,106 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Transporte</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/transportes/add" id="transporteForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="numero_placa" class="form-label">Número de Placa *</label>
+          <input type="text" class="form-control" id="numero_placa" name="numero_placa" required
+                 placeholder="Ej: ABC-123">
+        </div>
+
+        <div class="mb-3">
+          <label for="color" class="form-label">Color *</label>
+          <input type="text" class="form-control" id="color" name="color" required
+                 placeholder="Ej: Rojo, Azul, etc.">
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="marca" class="form-label">Marca *</label>
+          <input type="text" class="form-control" id="marca" name="marca" required
+                 placeholder="Ej: Toyota, Ford, etc.">
+        </div>
+
+        <div class="mb-3">
+          <label for="numero_oficial" class="form-label">Número Oficial (Opcional)</label>
+          <input type="text" class="form-control" id="numero_oficial" name="numero_oficial"
+                 placeholder="Solo si es de una empresa">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="tipo_vehiculo_id" class="form-label">Tipo de Vehículo *</label>
+          <select class="form-select" id="tipo_vehiculo_id" name="tipo_vehiculo_id" required>
+            <option value="">Seleccione un tipo...</option>
+            <% tiposVehiculo.forEach(tipo => { %>
+              <option value="<%= tipo.pk_tipo_vehiculo %>">
+                <%= tipo.tipo_vehiculo %> (Capacidad: <%= tipo.capacidad_carga_kg %> kg)
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="empresa_id" class="form-label">Empresa (Opcional)</label>
+          <select class="form-select" id="empresa_id" name="empresa_id">
+            <option value="">Sin empresa asignada</option>
+            <% empresas.forEach(empresa => { %>
+              <option value="<%= empresa.pk_empresa %>">
+                <%= empresa.nombre_comercial || empresa.razon_social %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Transporte</button>
+      <a href="/admin/transportes" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('transporteForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obligatorios
+    const requiredFields = ['numero_placa', 'color', 'marca', 'tipo_vehiculo_id'];
+    requiredFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (!field.value) {
+        isValid = false;
+        field.classList.add('is-invalid');
+      } else {
+        field.classList.remove('is-invalid');
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Complete todos los campos obligatorios');
+    }
+  });
+});
+</script>

@@ -1,0 +1,43 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Tipo de Unidad</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/tipos-unidad/add" id="tipoUnidadForm">
+    <div class="mb-3">
+      <label for="nombre_tipo_unidad" class="form-label">Nombre del Tipo de Unidad *</label>
+      <input type="text" class="form-control" id="nombre_tipo_unidad" name="nombre_tipo_unidad" required
+             placeholder="Ej: Kilogramo, Litro, Caja, etc.">
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Tipo de Unidad</button>
+      <a href="/admin/tipos-unidad" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('tipoUnidadForm').addEventListener('submit', function(e) {
+    const tipoUnidadInput = document.getElementById('nombre_tipo_unidad');
+    
+    if (!tipoUnidadInput.value.trim()) {
+      e.preventDefault();
+      tipoUnidadInput.classList.add('is-invalid');
+      alert('El nombre del tipo de unidad es obligatorio');
+    } else {
+      tipoUnidadInput.classList.remove('is-invalid');
+    }
+  });
+});
+</script>

@@ -13,6 +13,12 @@ class Role {
     const { rows } = await pool.query('SELECT * FROM rol WHERE pk_rol = $1', [id]);
     return rows[0];
   }
+
+    // Obtener todos los roles
+    static async getAll() {
+      const { rows } = await pool.query('SELECT * FROM rol');
+      return rows;
+    }
 }
 
 module.exports = Role;

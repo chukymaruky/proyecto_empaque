@@ -1,6 +1,7 @@
 const Proveedor = require('../../models/proveedor');
 const DatoPersona = require('../../models/DatoPersona');
-const Empresa = require('../../models/Empresa');
+const Empresa = require('../../models/empresa');
+const Empaque = require('../../models/empaque');
 
 const proveedorController = {
   showAddForm: async (req, res) => {
@@ -51,12 +52,34 @@ const proveedorController = {
 
   listProveedores: async (req, res) => {
     try {
-      const { empaque_id } = req.session.user;
-      const proveedores = await Proveedor.getAllByEmpaque(empaque_id);
-      
+      const { empaque_id, rol } = req.session.user;
+      let proveedores;
+      let empaques = []; // Inicializamos como array vacío
+
+      // Obtener proveedores según el rol del usuario
+      if (rol === 'administrador') {
+        proveedores = await Proveedor.getAll();
+        empaques = await Empaque.getAllActive(); // Necesitas implementar este método
+      } else {
+        proveedores = await Proveedor.getAllByEmpaque(empaque_id);
+        // Para usuarios no administradores, solo mostramos su empaque
+        const empaqueUsuario = await Empaque.getById(empaque_id);
+        if (empaqueUsuario) {
+          empaques = [empaqueUsuario];
+        }
+      }
+
+      // Crear mapa de empaques para fácil acceso
+      const empaquesMap = {};
+      empaques.forEach(e => empaquesMap[e.pk_empaque] = e);
+
       res.render('admin/proveedores/list', {
         user: req.session.user,
-        proveedores
+        proveedores: proveedores || [], // Aseguramos que siempre sea array
+        empaques: empaques, // Pasamos el array de empaques
+        empaquesMap: empaquesMap, // Pasamos el mapa de empaques
+        success_msg: req.flash('success_msg'),
+        error_msg: req.flash('error_msg')
       });
     } catch (error) {
       console.error(error);

@@ -77,6 +77,21 @@ class User {
   const { rows } = await pool.query(query);
   return rows;
 }
+
+static async getAllWithDetails() {
+  const query = `
+    SELECT u.pk_usuario, u.nombre_usuario, 
+           dp.nombres, dp.primer_apellido,
+           r.rol, e.nombre_empaque
+    FROM usuario u
+    JOIN dato_persona dp ON u.fk_dato_persona = dp.pk_dato_persona
+    JOIN rol r ON u.fk_rol = r.pk_rol
+    JOIN empaque e ON u.fk_empaque = e.pk_empaque
+    ORDER BY dp.nombres, dp.primer_apellido
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+}
 }
 
 module.exports = User;

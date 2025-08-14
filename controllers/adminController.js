@@ -1,4 +1,5 @@
 const Empaque = require('../models/empaque');
+const User = require('../models/User');
 
 const adminController = {
   // Dashboard del administrador
@@ -21,9 +22,21 @@ const adminController = {
   },
 
   // Gestión de usuarios
-  manageUsers: async (req, res) => {
-    // Implementar lógica para gestionar usuarios
-    res.render('admin/manage-users', { user: req.session.user });
+   manageUsers: async (req, res) => {
+    try {
+      const users = await User.getAllWithDetails(); // Nuevo método que necesitamos crear
+      
+      res.render('admin/users/list', {
+        user: req.session.user,
+        users, // Asegúrate de pasar esta variable
+        error_msg: req.flash('error_msg'),
+        success_msg: req.flash('success_msg')
+      });
+    } catch (error) {
+      console.error(error);
+      req.flash('error_msg', 'Error al cargar la lista de usuarios');
+      res.redirect('/admin');
+    }
   }
 };
 

@@ -1,0 +1,47 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Ventas de Productos</h2>
+    <a href="/admin/ventas-productos/add" class="btn btn-success">
+      <i class="fas fa-plus"></i> Nueva Venta
+    </a>
+  </div>
+
+
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Cliente</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (ventas.length === 0) { %>
+          <tr>
+            <td colspan="7" class="text-center">No hay ventas registradas</td>
+          </tr>
+        <% } %>
+        
+        <% ventas.forEach(venta => { %>
+          <tr>
+            <td><%= venta.producto %></td>
+            <td><%= venta.cliente_nombre %></td>
+            <td><%= venta.cantidad_producto %></td>
+            <td><%= venta.nombre_tipo_unidad %></td>
+            <td>$<%= venta.precio.toFixed(2) %></td>
+            <td>$<%= venta.total.toFixed(2) %></td>
+            <td><%= new Date(venta.fecha).toLocaleDateString() %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>

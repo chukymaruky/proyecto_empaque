@@ -7,7 +7,7 @@ const userController = {
     try {
       const roles = await Role.getAll();
       const empaques = await Empaque.getAll();
-      
+      // Renderizar el formulario de creación de usuario
       res.render('admin/users/add', {
         user: req.session.user,
         roles,

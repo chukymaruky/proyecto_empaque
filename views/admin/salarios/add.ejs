@@ -1,0 +1,80 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Agregar Nuevo Salario</h2>
+  
+  <% if (error_msg) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  
+  <% if (success_msg) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+
+  <form method="POST" action="/admin/salarios/add" id="salarioForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="empleado_id" class="form-label">Empleado *</label>
+          <select class="form-select" id="empleado_id" name="empleado_id" required>
+            <option value="">Seleccione un empleado...</option>
+            <% empleados.forEach(empleado => { %>
+              <option value="<%= empleado.pk_empleado %>">
+                <%= empleado.nombre_completo %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="cantidad_salario" class="form-label">Monto del Salario *</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input type="number" step="0.01" class="form-control" 
+                   id="cantidad_salario" name="cantidad_salario" 
+                   min="0" required placeholder="Ej: 5000.00">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Registrar Salario</button>
+      <a href="/admin/salarios" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Validación del formulario
+  document.getElementById('salarioForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obligatorios
+    const empleadoSelect = document.getElementById('empleado_id');
+    const salarioInput = document.getElementById('cantidad_salario');
+    
+    if (!empleadoSelect.value) {
+      isValid = false;
+      empleadoSelect.classList.add('is-invalid');
+    } else {
+      empleadoSelect.classList.remove('is-invalid');
+    }
+    
+    if (!salarioInput.value || parseFloat(salarioInput.value) <= 0) {
+      isValid = false;
+      salarioInput.classList.add('is-invalid');
+    } else {
+      salarioInput.classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+      e.preventDefault();
+      alert('Complete todos los campos obligatorios correctamente');
+    }
+  });
+});
+</script>

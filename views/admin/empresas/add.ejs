@@ -3,9 +3,6 @@
 <div class="container mt-4">
   <h2><%= empresa ? 'Editar' : 'Agregar' %> Empresa</h2>
   
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
   
   <form method="POST" action="<%= empresa ? '/admin/empresas/edit/' + empresa.pk_empresa : '/admin/empresas/add' %>">
     <div class="row">

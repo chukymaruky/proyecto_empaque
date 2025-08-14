@@ -8,9 +8,27 @@
     </a>
   </div>
 
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
+  <!-- Filtros de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o razón social...">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <select id="empaqueFilter" class="form-select">
+        <option value="">Todos los empaques</option>
+        <% if (empaques && empaques.length) { %>
+          <% empaques.forEach(empaque => { %>
+            <option value="<%= empaque.pk_empaque %>" <%= (user.empaque_id === empaque.pk_empaque) ? 'selected' : '' %>>
+              <%= empaque.nombre_empaque %>
+            </option>
+          <% }); %>
+        <% } %>
+      </select>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped">
@@ -19,15 +37,25 @@
           <th>ID</th>
           <th>Nombre</th>
           <th>Empresa</th>
+          <th>Empaque</th>
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="proveedoresTableBody">
         <% proveedores.forEach(proveedor => { %>
-          <tr>
+          <tr data-nombre="<%= `${proveedor.nombres} ${proveedor.primer_apellido}`.toLowerCase() %>"
+              data-empresa="<%= (proveedor.razon_social || '').toLowerCase() %>"
+              data-empaque="<%= proveedor.fk_empaque %>">
             <td><%= proveedor.pk_proveedor %></td>
             <td><%= proveedor.nombres %> <%= proveedor.primer_apellido %></td>
             <td><%= proveedor.razon_social || 'N/A' %></td>
+            <td>
+              <% if (empaquesMap && proveedor.fk_empaque && empaquesMap[proveedor.fk_empaque]) { %>
+                <%= empaquesMap[proveedor.fk_empaque].nombre_empaque %>
+              <% } else { %>
+                N/A
+              <% } %>
+            </td>
             <td>
               <a href="#" class="btn btn-sm btn-info">Editar</a>
               <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
@@ -38,3 +66,35 @@
     </table>
   </div>
 </div>
+
+<script>
+// Funcionalidad de búsqueda y filtrado
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const empaqueFilter = document.getElementById('empaqueFilter');
+  const proveedoresRows = document.querySelectorAll('#proveedoresTableBody tr');
+
+  function filterProveedores() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedEmpaque = empaqueFilter.value;
+    
+    proveedoresRows.forEach(row => {
+      const nombre = row.getAttribute('data-nombre');
+      const empresa = row.getAttribute('data-empresa');
+      const empaqueId = row.getAttribute('data-empaque');
+      
+      const matchesSearch = nombre.includes(searchTerm) || empresa.includes(searchTerm);
+      const matchesEmpaque = !selectedEmpaque || empaqueId === selectedEmpaque;
+      
+      if (matchesSearch && matchesEmpaque) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  searchInput.addEventListener('input', filterProveedores);
+  empaqueFilter.addEventListener('change', filterProveedores);
+});
+</script>

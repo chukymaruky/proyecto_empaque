@@ -1,0 +1,33 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <h2>Editar Transportista</h2>
+  
+  
+
+  <div class="mb-3">
+    <label class="form-label">Transportista</label>
+    <input type="text" class="form-control" 
+           value="<%= transportista.nombre_completo %>" readonly>
+  </div>
+
+  <form method="POST" action="/admin/transportistas/edit/<%= transportista.pk_transportista %>" id="transportistaForm">
+    <div class="mb-3">
+      <label for="empresa_id" class="form-label">Empresa (Opcional)</label>
+      <select class="form-select" id="empresa_id" name="empresa_id">
+        <option value="">Sin empresa asignada</option>
+        <% empresas.forEach(empresa => { %>
+          <option value="<%= empresa.pk_empresa %>"
+            <%= empresa.pk_empresa == transportista.fk_empresa ? 'selected' : '' %>>
+            <%= empresa.nombre_comercial || empresa.razon_social %>
+          </option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <button type="submit" class="btn btn-primary">Actualizar Transportista</button>
+      <a href="/admin/transportistas" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>

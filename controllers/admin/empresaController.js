@@ -1,4 +1,5 @@
-const Empresa = require('../../models/Empresa');
+const Empresa = require('../../models/empresa');
+const Empaque = require('../../models/empaque');
 const validateRFC = require('../../helpers/rfcValidator');
 
 const empresaController = {
@@ -56,18 +57,33 @@ if (rfc && !validateRFC(rfc)) {
     }
   },
 
-  listEmpresas: async (req, res) => {
+listEmpresas: async (req, res) => {
     try {
       let empresas;
+      let empaques = []; // Inicializamos como array vacío por defecto
+      
+      // Obtener todas las empresas según el rol del usuario
       if (req.session.user.rol === 'administrador') {
         empresas = await Empresa.getAll();
+        empaques = await Empaque.getAllActive(); // Solo administradores ven todos los empaques
       } else {
         empresas = await Empresa.getAllByEmpaque(req.session.user.empaque_id);
+        // Para usuarios no administradores, solo mostramos su empaque en el filtro
+        const empaqueUsuario = await Empaque.getById(req.session.user.empaque_id);
+        if (empaqueUsuario) {
+          empaques = [empaqueUsuario];
+        }
       }
+
+      // Crear un mapa de empaques para fácil acceso
+      const empaquesMap = {};
+      empaques.forEach(e => empaquesMap[e.pk_empaque] = e);
 
       res.render('admin/empresas/list', {
         user: req.session.user,
-        empresas,
+        empresas: empresas || [], // Aseguramos que siempre sea un array
+        empaques: empaques, // Pasamos el array de empaques
+        empaquesMap: empaquesMap, // Pasamos el mapa de empaques
         success_msg: req.flash('success_msg'),
         error_msg: req.flash('error_msg')
       });
