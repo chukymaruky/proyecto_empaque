@@ -1,3 +1,5 @@
+//models/transporte.js
+
 const pool = require('../config/database');
 
 class Transporte {
@@ -43,6 +45,23 @@ class Transporte {
     const { rows } = await pool.query(query, [pk_transporte, fk_empaque]);
     return rows[0];
   }
+
+  static async getAll() {
+  const query = `
+    SELECT t.*, 
+           tv.tipo_vehiculo,
+           e.nombre_comercial as empresa_nombre,
+           emp.nombre_empaque
+    FROM transporte t
+    JOIN tipo_vehiculo tv ON t.fk_tipo_vehiculo = tv.pk_tipo_vehiculo
+    LEFT JOIN empresa e ON t.fk_empresa = e.pk_empresa
+    JOIN empaque emp ON t.fk_empaque = emp.pk_empaque
+    WHERE t.estado = true
+    ORDER BY t.numero_placa
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+}
 
   static async update({ pk_transporte, numero_placa, color, marca, numero_oficial, fk_tipo_vehiculo, fk_empresa, fk_empaque }) {
     const query = `

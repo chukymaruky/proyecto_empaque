@@ -2,14 +2,6 @@
 
 <div class="container mt-4">
   <h2>Agregar Nuevo Pedido</h2>
-  
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
-  
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
 
   <form method="POST" action="/admin/pedidos/add" id="pedidoForm">
     <div class="row">
@@ -19,9 +11,15 @@
           <select class="form-select" id="proveedor_id" name="proveedor_id" required>
             <option value="">Seleccione un proveedor...</option>
             <% proveedores.forEach(proveedor => { %>
-              <option value="<%= proveedor.pk_proveedor %>">
-                <%= proveedor.nombre_comercial %>
-              </option>
+            <option value="<%= proveedor.pk_proveedor %>">
+              <%= proveedor.nombres %> <%= proveedor.primer_apellido %>
+              <% if (proveedor.razon_social) { %> 
+                (<%= proveedor.razon_social %>)
+              <% } %>
+              <% if (user.rol === 'administrador') { %>
+                [<%= proveedor.nombre_empaque %>]
+              <% } %>
+            </option>
             <% }); %>
           </select>
         </div>
@@ -31,9 +29,12 @@
           <select class="form-select" id="categoria_id" name="categoria_id" required>
             <option value="">Seleccione una categoría...</option>
             <% categorias.forEach(categoria => { %>
-              <option value="<%= categoria.pk_categoria_producto %>">
-                <%= categoria.nombre_categoria %>
-              </option>
+            <option value="<%= categoria.pk_categoria_producto %>">
+              <%= categoria.nombre_categoria %>
+              <% if (user.rol === 'administrador') { %>
+                [<%= categoria.nombre_empaque %>]
+              <% } %>
+            </option>
             <% }); %>
           </select>
         </div>
@@ -43,9 +44,12 @@
           <select class="form-select" id="transporte_id" name="transporte_id">
             <option value="">Sin transporte asignado</option>
             <% transportes.forEach(transporte => { %>
-              <option value="<%= transporte.pk_transporte %>">
-                <%= transporte.numero_placa %> (<%= transporte.marca %>)
-              </option>
+            <option value="<%= transporte.pk_transporte %>">
+              <%= transporte.numero_placa %> (<%= transporte.marca %>)
+              <% if (user.rol === 'administrador') { %>
+                [<%= transporte.nombre_empaque %>]
+              <% } %>
+            </option>
             <% }); %>
           </select>
         </div>
@@ -91,40 +95,40 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Establecer fecha mínima como hoy
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('fecha_llegada').min = today;
-  
-  // Validación del formulario
-  document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-    let isValid = true;
-    
-    // Validar campos obligatorios
-    const requiredFields = ['proveedor_id', 'categoria_id', 'peso', 'fecha_llegada', 'hora_llegada'];
-    requiredFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId);
-      if (!field.value) {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Establecer fecha mínima como hoy
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_llegada').min = today;
+
+    // Validación del formulario
+    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+      let isValid = true;
+
+      // Validar campos obligatorios
+      const requiredFields = ['proveedor_id', 'categoria_id', 'peso', 'fecha_llegada', 'hora_llegada'];
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value) {
+          isValid = false;
+          field.classList.add('is-invalid');
+        } else {
+          field.classList.remove('is-invalid');
+        }
+      });
+
+      // Validar peso positivo
+      const peso = parseFloat(document.getElementById('peso').value);
+      if (isNaN(peso) || peso <= 0) {
         isValid = false;
-        field.classList.add('is-invalid');
+        document.getElementById('peso').classList.add('is-invalid');
       } else {
-        field.classList.remove('is-invalid');
+        document.getElementById('peso').classList.remove('is-invalid');
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert('Complete todos los campos obligatorios correctamente');
       }
     });
-    
-    // Validar peso positivo
-    const peso = parseFloat(document.getElementById('peso').value);
-    if (isNaN(peso) || peso <= 0) {
-      isValid = false;
-      document.getElementById('peso').classList.add('is-invalid');
-    } else {
-      document.getElementById('peso').classList.remove('is-invalid');
-    }
-    
-    if (!isValid) {
-      e.preventDefault();
-      alert('Complete todos los campos obligatorios correctamente');
-    }
   });
-});
 </script>

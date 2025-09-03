@@ -52,6 +52,20 @@
       <textarea class="form-control" id="domicilio_fiscal" name="domicilio_fiscal" 
                 rows="2"><%= empresa ? empresa.domicilio_fiscal : '' %></textarea>
     </div>
+
+    <div class="form-group">
+          <label for="fk_empaque">Empaque *</label>
+          <select class="form-control" id="fk_empaque" name="fk_empaque" required>
+            <% empaques.forEach(empaque => { %>
+              <option value="<%= empaque.pk_empaque %>" 
+                <%= (empresa && empresa.fk_empaque === empaque.pk_empaque) || 
+                    (!empresa && user.empaque_id === empaque.pk_empaque) ? 'selected' : '' %>>
+                <%= empaque.nombre_empaque %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+
     
     <div class="form-group">
       <label for="representante_legal">Representante Legal</label>

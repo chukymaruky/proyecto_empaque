@@ -25,6 +25,18 @@ class Rol {
   return rows;
 }
 
+ static async getAllActive() {
+  const query = `
+    SELECT r.*, e.nombre_empaque
+    FROM rol r
+    JOIN empaque e ON r.fk_empaque = e.pk_empaque
+    WHERE r.estado = true AND e.estado = true
+    ORDER BY e.nombre_empaque, r.rol
+  `;
+  const { rows } = await pool.query(query);
+  return rows;
+}
+
   static async getAllByEmpaque(fk_empaque) {
     const query = `
       SELECT r.*, e.nombre_empaque

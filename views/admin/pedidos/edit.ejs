@@ -1,0 +1,123 @@
+<%- include('../../layouts/adminLayout') -%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Editar Pedido #<%= pedido.pk_pedido %></h2>
+    <a href="/admin/pedidos" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  <form method="POST" action="/admin/pedidos/edit/<%= pedido.pk_pedido %>">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="proveedor_id" class="form-label">Proveedor *</label>
+          <select class="form-select" id="proveedor_id" name="proveedor_id" required>
+            <option value="">Seleccione un proveedor...</option>
+            <% proveedores.forEach(proveedor => { %>
+            <option value="<%= proveedor.pk_proveedor %>" <%= pedido.fk_proveedor === proveedor.pk_proveedor ? 'selected' : '' %>>
+              <%= proveedor.nombres %> <%= proveedor.primer_apellido %>
+              <% if (proveedor.nombre_comercial || proveedor.razon_social) { %>
+              (<%= proveedor.nombre_comercial || proveedor.razon_social %>)
+              <% } %>
+              [<%= proveedor.nombre_empaque %>]
+            </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="categoria_id" class="form-label">Categoría de Producto *</label>
+          <select class="form-select" id="categoria_id" name="categoria_id" required>
+            <option value="">Seleccione una categoría...</option>
+            <% categorias.forEach(categoria => { %>
+            <option value="<%= categoria.pk_categoria_producto %>" <%= pedido.fk_categoria_producto === categoria.pk_categoria_producto ? 'selected' : '' %>>
+              <%= categoria.nombre_categoria %>
+            </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="peso" class="form-label">Peso (kg) *</label>
+          <input type="number" class="form-control" id="peso" name="peso" step="0.01" min="0.01" value="<%= pedido.peso_pedido %>" required>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="transporte_id" class="form-label">Transporte (opcional)</label>
+          <select class="form-select" id="transporte_id" name="transporte_id">
+            <option value="">Sin transporte asignado</option>
+            <% transportes.forEach(transporte => { %>
+            <option value="<%= transporte.pk_transporte %>" <%= pedido.fk_transporte === transporte.pk_transporte ? 'selected' : '' %>>
+              <%= transporte.numero_placa %> - <%= transporte.marca %> (<%= transporte.color %>) [<%= transporte.nombre_empaque %>]
+            </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha_llegada" class="form-label">Fecha de Llegada *</label>
+          <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada" value="<%= new Date(pedido.dia_hora_llegada).toISOString().split('T')[0] %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="hora_llegada" class="form-label">Hora de Llegada *</label>
+          <input type="time" class="form-control" id="hora_llegada" name="hora_llegada" value="<%= new Date(pedido.dia_hora_llegada).toTimeString().slice(0,5) %>" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="estado" class="form-label">Estado del Pedido *</label>
+          <select class="form-select" id="estado" name="estado" required>
+            <option value="true" <%= pedido.estado_pedido ? 'selected' : '' %>>Pendiente</option>
+            <option value="false" <%= !pedido.estado_pedido ? 'selected' : '' %>>Entregado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="mb-3">
+          <label for="observaciones" class="form-label">Observaciones</label>
+          <textarea class="form-control" id="observaciones" name="observaciones" rows="3"><%= pedido.observaciones || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Guardar Cambios
+      </button>
+      <a href="/admin/pedidos" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Validación en cliente
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const peso = parseFloat(document.getElementById('peso').value);
+    if (isNaN(peso) || peso <= 0) {
+      e.preventDefault();
+      alert('El peso debe ser un número mayor a cero');
+      document.getElementById('peso').focus();
+      return;
+    }
+
+    const fecha = document.getElementById('fecha_llegada').value;
+    const hora = document.getElementById('hora_llegada').value;
+    if (!fecha || !hora) {
+      e.preventDefault();
+      alert('Debe especificar fecha y hora de llegada');
+      return;
+    }
+
+    const fechaHora = new Date(`${fecha}T${hora}`);
+    if (isNaN(fechaHora.getTime())) {
+      e.preventDefault();
+      alert('Fecha u hora inválida');
+      return;
+    }
+  });
+</script>

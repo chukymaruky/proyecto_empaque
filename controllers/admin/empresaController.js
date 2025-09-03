@@ -1,17 +1,51 @@
-const Empresa = require('../../models/empresa');
+//controllers/admin/empresaController.js
+
+const Empresa = require('../../models/Empresa');
 const Empaque = require('../../models/empaque');
 const validateRFC = require('../../helpers/rfcValidator');
 
 const empresaController = {
-  showAddForm: (req, res) => {
+  showAddForm: async (req, res) => {
+  try {
+    const empaques = await Empaque.getAllActive();
     res.render('admin/empresas/add', {
       user: req.session.user,
-      empresa: null // Para uso en edición
+      empresa: null,
+      empaques: empaques
     });
-  },
+  } catch (error) {
+    console.error('Error al cargar formulario:', error);
+    req.flash('error_msg', 'Error al cargar el formulario');
+    res.redirect('/admin/empresas');
+  }
+},
 
   addEmpresa: async (req, res) => {
-    const {
+  const {
+    razon_social,
+    nombre_comercial,
+    rfc,
+    regimen_fiscal,
+    domicilio_fiscal,
+    telefono_contacto,
+    email_contacto,
+    representante_legal,
+    fk_empaque
+  } = req.body;
+
+  try {
+    // Validar RFC si se proporcionó
+    if (rfc && !validateRFC(rfc)) {
+      req.flash('error_msg', 'El RFC no tiene un formato válido');
+      const empaques = await Empaque.getAllActive();
+      return res.render('admin/empresas/add', {
+        user: req.session.user,
+        empresa: req.body,
+        empaques: empaques
+      });
+    }
+
+    await Empresa.create({
       razon_social,
       nombre_comercial,
       rfc,
@@ -19,43 +53,23 @@ const empresaController = {
       domicilio_fiscal,
       telefono_contacto,
       email_contacto,
-      representante_legal
-    } = req.body;
+      representante_legal,
+      fk_empaque: fk_empaque || req.session.user.empaque_id
+    });
 
-    try {
-      await Empresa.create({
-        razon_social,
-        nombre_comercial,
-        rfc,
-        regimen_fiscal,
-        domicilio_fiscal,
-        telefono_contacto,
-        email_contacto,
-        representante_legal,
-        fk_empaque: req.session.user.empaque_id
-      });
-
-          // En el método addEmpresa
-if (rfc && !validateRFC(rfc)) {
-  req.flash('error_msg', 'El RFC no tiene un formato válido');
-  return res.render('admin/empresas/add', {
-    user: req.session.user,
-    empresa: req.body
-  });
-}
-
-
-      req.flash('success_msg', 'Empresa registrada exitosamente');
-      res.redirect('/admin/empresas');
-    } catch (error) {
-      console.error('Error al registrar empresa:', error);
-      req.flash('error_msg', 'Error al registrar la empresa');
-      res.render('admin/empresas/add', {
-        user: req.session.user,
-        empresa: req.body // Para mantener los datos del formulario
-      });
-    }
-  },
+    req.flash('success_msg', 'Empresa registrada exitosamente');
+    res.redirect('/admin/empresas');
+  } catch (error) {
+    console.error('Error al registrar empresa:', error);
+    const empaques = await Empaque.getAllActive();
+    req.flash('error_msg', 'Error al registrar la empresa');
+    res.render('admin/empresas/add', {
+      user: req.session.user,
+      empresa: req.body,
+      empaques: empaques
+    });
+  }
+},
 
 listEmpresas: async (req, res) => {
     try {
@@ -92,7 +106,26 @@ listEmpresas: async (req, res) => {
       req.flash('error_msg', 'Error al cargar el listado de empresas');
       res.redirect('/admin');
     }
+  },
+
+  showEditForm: async (req, res) => {
+  try {
+    const { id } = req.params;
+    const empaques = await Empaque.getAllActive();
+    const empresa = await Empresa.getById(id);
+    
+    res.render('admin/empresas/edit', {
+      user: req.session.user,
+      empresa: empresa,
+      empaques: empaques
+    });
+  } catch (error) {
+    console.error('Error al cargar formulario de edición:', error);
+    req.flash('error_msg', 'Error al cargar el formulario de edición');
+    res.redirect('/admin/empresas');
   }
+},
+
 };
 
 module.exports = empresaController;

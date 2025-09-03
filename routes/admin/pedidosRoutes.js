@@ -12,5 +12,8 @@ router.get('/pedidos', pedidoController.listPedidos);
 router.get('/pedidos/add', pedidoController.showAddForm);
 router.post('/pedidos/add', pedidoController.addPedido);
 router.get('/pedidos/view/:id', pedidoController.viewPedido);
+router.get('/pedidos/edit/:id', pedidoController.showEditForm);
+router.post('/pedidos/edit/:id', pedidoController.updatePedido);
+router.get('/pedidos/by-empaque/:empaqueId', pedidoController.getPedidosByEmpaque);
 
 module.exports = router;

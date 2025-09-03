@@ -2,14 +2,6 @@
 
 <div class="container mt-4">
   <h2>Registrar Nuevo Gasto</h2>
-  
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
-  
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
 
   <form method="POST" action="/admin/gastos/add">
     <div class="row">
@@ -30,6 +22,18 @@
       </div>
       
       <div class="col-md-6">
+        <% if (user.rol === 'administrador' && Array.isArray(empaques) && empaques.length > 0) { %>
+        <div class="mb-3">
+          <label for="empaque_id" class="form-label">Empaque *</label>
+          <select class="form-select" id="empaque_id" name="empaque_id" required>
+            <option value="">Seleccione un empaque...</option>
+            <% empaques.forEach(empaque => { %>
+              <option value="<%= empaque.pk_empaque %>"><%= empaque.nombre_empaque %></option>
+            <% }); %>
+          </select>
+        </div>
+        <% } %>
+
         <div class="mb-3">
           <label for="tipo_gasto_id" class="form-label">Tipo de Gasto *</label>
           <select class="form-select" id="tipo_gasto_id" name="tipo_gasto_id" required>
@@ -42,11 +46,13 @@
         
         <div class="mb-3">
           <label for="pedido_id" class="form-label">Asociar a Pedido (opcional)</label>
-          <select class="form-select" id="pedido_id" name="pedido_id">
+          <select class="form-select" id="pedido_id" name="pedido_id" <%= !user.rol === 'administrador' ? '' : 'disabled' %>>
             <option value="">No asociar a pedido</option>
-            <% pedidos.forEach(pedido => { %>
-              <option value="<%= pedido.pk_pedido %>">Pedido #<%= pedido.pk_pedido %></option>
-            <% }); %>
+            <% if (!user.rol === 'administrador') { %>
+              <% pedidos.forEach(pedido => { %>
+                <option value="<%= pedido.pk_pedido %>">Pedido #<%= pedido.pk_pedido %></option>
+              <% }); %>
+            <% } %>
           </select>
         </div>
       </div>
@@ -65,6 +71,58 @@ document.querySelector('form').addEventListener('submit', function(e) {
     e.preventDefault();
     alert('El monto debe ser un número mayor a cero');
     document.getElementById('monto').focus();
+    return;
+  }
+
+  const empaqueSelect = document.getElementById('empaque_id');
+  if (empaqueSelect && !empaqueSelect.value) {
+    e.preventDefault();
+    alert('Debe seleccionar un empaque');
+    empaqueSelect.focus();
   }
 });
+
+// Cargar pedidos cuando se selecciona un empaque (solo para administradores)
+const empaqueSelect = document.getElementById('empaque_id');
+const pedidoSelect = document.getElementById('pedido_id');
+
+if (empaqueSelect && pedidoSelect) {
+  empaqueSelect.addEventListener('change', async function() {
+    const empaqueId = this.value;
+    pedidoSelect.disabled = true;
+    pedidoSelect.innerHTML = '<option value="">Cargando pedidos...</option>';
+
+    if (!empaqueId) {
+      pedidoSelect.innerHTML = '<option value="">No asociar a pedido</option>';
+      pedidoSelect.disabled = true;
+      return;
+    }
+
+    try {
+      const response = await fetch(`/admin/pedidos/by-empaque/${empaqueId}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al cargar pedidos');
+      }
+      
+      const pedidos = await response.json();
+      
+      pedidoSelect.innerHTML = '<option value="">No asociar a pedido</option>';
+      pedidos.forEach(pedido => {
+        const option = document.createElement('option');
+        option.value = pedido.pk_pedido;
+        const fecha = new Date(pedido.dia_hora_llegada).toLocaleDateString();
+        const proveedor = pedido.proveedor_nombre || 'Sin proveedor';
+        option.textContent = `Pedido #${pedido.pk_pedido} - ${proveedor} (${fecha})`;
+        pedidoSelect.appendChild(option);
+      });
+      
+      pedidoSelect.disabled = false;
+    } catch (error) {
+      console.error('Error:', error);
+      pedidoSelect.innerHTML = '<option value="">Error al cargar pedidos</option>';
+      pedidoSelect.disabled = true;
+    }
+  });
+}
 </script>

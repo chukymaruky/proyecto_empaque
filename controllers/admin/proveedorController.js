@@ -1,6 +1,6 @@
 const Proveedor = require('../../models/proveedor');
 const DatoPersona = require('../../models/DatoPersona');
-const Empresa = require('../../models/empresa');
+const Empresa = require('../../models/Empresa');
 const Empaque = require('../../models/empaque');
 
 const proveedorController = {

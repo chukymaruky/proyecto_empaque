@@ -12,6 +12,6 @@ router.use(isAuthenticated, checkRole(['administrador']));
 router.get('/empleados', empleadoController.listEmpleados);
 router.get('/empleados/add', empleadoController.showAddForm);
 router.post('/empleados/add', empleadoController.addEmpleado);
-
+router.get('/empleados/roles/:empaque_id', empleadoController.getRolesByEmpaque);
 
 module.exports = router;

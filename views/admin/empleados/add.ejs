@@ -3,13 +3,6 @@
 <div class="container mt-4">
   <h2>Registrar Nuevo Empleado</h2>
   
-  <% if (error_msg) { %>
-    <div class="alert alert-danger"><%= error_msg %></div>
-  <% } %>
-  
-  <% if (success_msg) { %>
-    <div class="alert alert-success"><%= success_msg %></div>
-  <% } %>
 
   <form method="POST" action="/admin/empleados/add">
     <div class="mb-3">
@@ -25,6 +18,27 @@
       </select>
       <small class="form-text text-muted">Solo se muestran usuarios que no son empleados</small>
     </div>
+
+    <% if (user.rol === 'administrador' && Array.isArray(empaques) && empaques.length > 0) { %>
+    <div class="mb-3">
+      <label for="empaque_id" class="form-label">Seleccione un Empaque *</label>
+      <select class="form-select" id="empaque_id" name="empaque_id" required>
+        <option value="">Seleccione un empaque...</option>
+        <% empaques.forEach(empaque => { %>
+          <option value="<%= empaque.pk_empaque %>">
+            <%= empaque.nombre_empaque %>
+          </option>
+        <% }); %>
+      </select>
+    </div>
+    <% } %>
+
+    <div class="mb-3">
+      <label for="rol_id" class="form-label">Seleccione un Rol *</label>
+      <select class="form-select" id="rol_id" name="rol_id" required disabled>
+        <option value="">Primero seleccione un empaque...</option>
+      </select>
+    </div>
     
     <button type="submit" class="btn btn-primary">Registrar Empleado</button>
     <a href="/admin/empleados" class="btn btn-secondary">Cancelar</a>
@@ -32,13 +46,72 @@
 </div>
 
 <script>
-// Validación en cliente
-document.querySelector('form').addEventListener('submit', function(e) {
+document.addEventListener('DOMContentLoaded', function() {
   const usuarioSelect = document.getElementById('usuario_id');
-  if (usuarioSelect.value === '') {
-    e.preventDefault();
-    alert('Debe seleccionar un usuario');
-    usuarioSelect.focus();
+  const rolSelect = document.getElementById('rol_id');
+  const empaqueSelect = document.getElementById('empaque_id');
+
+  // Función para cargar roles según el empaque seleccionado
+  async function loadRoles(empaqueId) {
+    try {
+      rolSelect.disabled = true;
+      rolSelect.innerHTML = '<option value="">Cargando roles...</option>';
+      
+      const response = await fetch(`/admin/empleados/roles/${empaqueId}`);
+      if (!response.ok) throw new Error('Error al cargar roles');
+      
+      const roles = await response.json();
+      
+      rolSelect.innerHTML = '<option value="">Seleccione un rol...</option>';
+      roles.forEach(rol => {
+        const option = document.createElement('option');
+        option.value = rol.pk_rol;
+        option.textContent = rol.rol;
+        rolSelect.appendChild(option);
+      });
+      
+      rolSelect.disabled = false;
+    } catch (error) {
+      console.error('Error:', error);
+      rolSelect.innerHTML = '<option value="">Error al cargar roles</option>';
+    }
   }
+
+  // Event listener para cambio de empaque
+  if (empaqueSelect) {
+    empaqueSelect.addEventListener('change', function() {
+      rolSelect.value = '';
+      if (this.value) {
+        loadRoles(this.value);
+      } else {
+        rolSelect.disabled = true;
+        rolSelect.innerHTML = '<option value="">Primero seleccione un empaque...</option>';
+      }
+    });
+  }
+
+  // Validación del formulario
+  document.querySelector('form').addEventListener('submit', function(e) {
+    if (usuarioSelect.value === '') {
+      e.preventDefault();
+      alert('Debe seleccionar un usuario');
+      usuarioSelect.focus();
+      return;
+    }
+    
+    if (empaqueSelect && empaqueSelect.value === '') {
+      e.preventDefault();
+      alert('Debe seleccionar un empaque');
+      empaqueSelect.focus();
+      return;
+    }
+    
+    if (rolSelect.value === '') {
+      e.preventDefault();
+      alert('Debe seleccionar un rol');
+      rolSelect.focus();
+      return;
+    }
+  });
 });
 </script>

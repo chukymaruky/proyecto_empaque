@@ -1,14 +1,22 @@
 const Cliente = require('../../models/Cliente');
 const Empresa = require('../../models/Empresa');
+const Empaque = require('../../models/empaque');
 
 const clienteController = {
   showAddForm: async (req, res) => {
     try {
       const empresas = await Empresa.getAll();
+      let empaques = [];
+      
+      // Si es administrador, obtener lista de empaques
+      if (req.session.user.rol === 'administrador') {
+        empaques = await Empaque.getAllActive();
+      }
       
       res.render('admin/clientes/add', {
         user: req.session.user,
         empresas,
+        empaques: empaques || [], // Asegurarnos de que siempre sea un array
         error_msg: req.flash('error_msg'),
         success_msg: req.flash('success_msg'),
         formData: null
@@ -21,21 +29,28 @@ const clienteController = {
   },
 
   addCliente: async (req, res) => {
-    const { empresa_id } = req.body;
-    const { empaque_id } = req.session.user;
+    const { empresa_id, empaque_id: selectedEmpaqueId } = req.body;
+    let empaqueId;
+
+    // Si es administrador, usar el empaque seleccionado, si no, usar el del usuario
+    if (req.session.user.rol === 'administrador' && selectedEmpaqueId) {
+      empaqueId = selectedEmpaqueId;
+    } else {
+      empaqueId = req.session.user.empaque_id;
+    }
 
     try {
-      // Validar que la empresa no sea ya cliente
-      const isAlreadyClient = await Cliente.isCompanyAlreadyClient(empresa_id, empaque_id);
+      // Validar que la empresa no sea ya cliente en ese empaque
+      const isAlreadyClient = await Cliente.isCompanyAlreadyClient(empresa_id, empaqueId);
       if (isAlreadyClient) {
-        req.flash('error_msg', 'Esta empresa ya está registrada como cliente');
+        req.flash('error_msg', 'Esta empresa ya está registrada como cliente en este empaque');
         return res.redirect('/admin/clientes/add');
       }
 
       // Crear cliente
       await Cliente.create({
         fk_empresa: empresa_id,
-        fk_empaque: empaque_id
+        fk_empaque: empaqueId
       });
 
       req.flash('success_msg', 'Cliente registrado exitosamente');
@@ -49,8 +64,16 @@ const clienteController = {
 
   listClientes: async (req, res) => {
     try {
+      let clientes;
       const { empaque_id } = req.session.user;
-      const clientes = await Cliente.getAllByEmpaque(empaque_id);
+
+      if (req.session.user.rol === 'administrador') {
+        // Si es admin, puede ver todos los clientes
+        clientes = await Cliente.getAll();
+      } else {
+        // Si no es admin, solo ve los clientes de su empaque
+        clientes = await Cliente.getAllByEmpaque(empaque_id);
+      }
 
       res.render('admin/clientes/list', {
         user: req.session.user,
